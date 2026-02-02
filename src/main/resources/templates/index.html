@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Nagar Alert Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-200 min-h-screen relative overflow-x-hidden">
+
+    <!-- Background Decoration -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[100px]">
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-40 border-b border-slate-800">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div
+                    class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-xl shadow-lg shadow-blue-900/50">
+                    📢
+                </div>
+                <h1
+                    class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 tracking-tight">
+                    Nagar Alert Hub</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/admin"
+                    class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition hover:bg-white/5 rounded-full">Admin
+                    Portal →</a>
+            </div>
+        </div>
+        <div class="bg-red-600/90 text-white text-center text-sm font-bold py-1 animate-pulse"
+            th:if="${criticalCount > 0}">
+            ⚠️ CRITICAL ALERTS ACTIVE IN YOUR AREA
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-10 p-6 grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+        <!-- Report Form Column -->
+        <div class="lg:col-span-1">
+            <div class="glass p-8 rounded-2xl shadow-2xl sticky top-28">
+                <h2 class="text-2xl font-bold mb-6 text-white flex items-center">
+                    <span class="mr-3 text-blue-500">✍️</span> Report Incident
+                </h2>
+                <form action="/report" method="post" class="space-y-5">
+
+                    <!-- Location Input -->
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Location</label>
+                        <div class="space-y-2">
+                            <input type="text" id="locationInput" name="location"
+                                placeholder="Enter landmark or street..." required
+                                class="w-full p-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-600">
+
+                            <div class="flex space-x-2">
+                                <button type="button" onclick="detectLocation()"
+                                    class="flex-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-600/50 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-center group">
+                                    <span class="mr-2 group-hover:scale-110 transition">🎯</span> GPS
+                                </button>
+                                <button type="button" onclick="openMap()"
+                                    class="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-600/50 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-center group">
+                                    <span class="mr-2 group-hover:scale-110 transition">🗺️</span> Map
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description Input -->
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Description</label>
+                        <textarea name="description" rows="4" placeholder="Describe the incident clearly..." required
+                            class="w-full p-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-600 resize-none"></textarea>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-900/20 transition transform active:scale-95">
+                        Submit Report
+                    </button>
+                    <p class="text-xs text-center text-slate-500 mt-4">Your report helps keep the city safe.</p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Live Feed Column -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <span class="w-2 h-8 bg-blue-500 rounded-full mr-3"></span>
+                    Live City Feed
+                </h2>
+                <span class="text-slate-500 text-sm">Real-time updates</span>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${alerts.empty}"
+                class="glass p-12 rounded-2xl text-center border-dashed border-2 border-slate-700">
+                <div class="text-6xl mb-4 opacity-50">🌆</div>
+                <h3 class="text-xl font-semibold text-white">All Clear</h3>
+                <p class="text-slate-400 mt-2">No active incidents reported in the city.</p>
+            </div>
+
+            <!-- Alerts List -->
+            <div th:each="alert : ${alerts}"
+                class="fade-in group relative overflow-hidden glass rounded-xl p-0 hover:border-slate-600 transition duration-300">
+
+                <!-- Severity Strip -->
+                <div class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300" th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'bg-red-500' : 
+                                     (${alert.severity?.name() == 'HIGH'} ? 'bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.4)]' : 
+                                     (${alert.severity?.name() == 'MEDIUM'} ? 'bg-yellow-500' : 'bg-blue-500'))">
+                </div>
+
+                <div class="p-5 pl-8 flex justify-between items-start">
+                    <div class="space-y-3 flex-1">
+                        <div class="flex items-center flex-wrap gap-2">
+                            <!-- Status Badge -->
+                            <span th:if="${alert.verified}"
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-green-500/20 text-green-400 ring-1 ring-inset ring-green-500/40">
+                                <span class="mr-1">✅</span> VERIFIED
+                            </span>
+                            <span th:unless="${alert.verified}"
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-yellow-500/10 text-yellow-500 ring-1 ring-inset ring-yellow-500/20">
+                                <span class="mr-1">⏳</span> PENDING VERIFICATION
+                            </span>
+
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wide ring-1 ring-inset"
+                                th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'bg-red-400/10 text-red-400 ring-red-400/20' : 
+                                                (${alert.severity?.name() == 'HIGH'} ? 'bg-orange-400/10 text-orange-400 ring-orange-400/20' : 
+                                                (${alert.severity?.name() == 'MEDIUM'} ? 'bg-yellow-400/10 text-yellow-400 ring-yellow-400/20' : 
+                                                'bg-blue-400/10 text-blue-400 ring-blue-400/20'))"
+                                th:text="${alert.severity}">SEVERITY</span>
+
+                            <span class="text-slate-500 text-xs">•</span>
+                            <span class="text-slate-300 font-medium text-sm flex items-center">
+                                <span class="mr-1 opacity-70">📍</span>
+                                <span th:text="${alert.location}">Location</span>
+                            </span>
+                        </div>
+
+                        <p class="text-slate-200 text-lg leading-relaxed" th:text="${alert.description}">Description...
+                        </p>
+
+                        <div class="pt-2 flex items-center text-xs text-slate-500 font-mono">
+                            <span class="mr-2">🕒</span>
+                            <span th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy, hh:mm a')}">Time</span>
+                            <span class="mx-2">•</span>
+                            <span th:text="${alert.department}" class="text-slate-400">DEPT</span>
+                        </div>
+                    </div>
+
+                    <!-- Icon based on Severity/Dept -->
+                    <div
+                        class="hidden sm:flex items-center justify-center w-12 h-12 rounded-full bg-slate-800/50 text-2xl border border-slate-700 shadow-inner ml-4">
+                        <span th:if="${alert.department == 'POLICE'}">👮</span>
+                        <span th:if="${alert.department == 'FIRE'}">🚒</span>
+                        <span th:if="${alert.department == 'MEDICAL'}">🚑</span>
+                        <span th:if="${alert.department == 'ELECTRICAL'}">⚡</span>
+                        <span th:if="${alert.department == 'MUNICIPAL'}">🏗️</span>
+                        <span th:if="${alert.department == 'TRAFFIC'}">🚦</span>
+                        <span th:if="${alert.department == null}">📢</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-20 py-8 border-t border-slate-800 text-center text-slate-600 text-sm">
+        <p>&copy; 2026 Nagar Alert Hub. Protecting the City.</p>
+    </footer>
+
+    <!-- Map Modal (Preserved Functionality) -->
+    <div id="mapModal"
+        class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div
+            class="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col border border-slate-700 overflow-hidden">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900">
+                <h3 class="text-xl font-bold text-white flex items-center"><span class="mr-2">📍</span> Select Location
+                </h3>
+                <button onclick="closeMap()"
+                    class="text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-800 text-lg">&times;</button>
+            </div>
+            <div class="relative flex-1">
+                <div id="map" class="absolute inset-0 z-10"></div>
+                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 w-[90%] max-w-md">
+                    <div class="flex shadow-2xl relative group">
+                        <input type="text" id="mapSearch" placeholder="Search area (e.g. Gandhi Maidan)..."
+                            class="w-full p-3 pl-4 rounded-l-xl bg-white/95 text-slate-900 focus:outline-none border-0 shadow-lg text-sm font-medium backdrop-blur"
+                            autocomplete="off">
+                        <button onclick="searchLocation()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded-r-xl font-bold text-sm shadow-lg transition">Search</button>
+                        <ul id="searchSuggestions"
+                            class="absolute top-full left-0 right-0 bg-white text-slate-900 rounded-xl shadow-2xl hidden max-h-60 overflow-y-auto z-30 divide-y divide-slate-100 mt-2 border border-slate-100">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-800 bg-slate-900 flex justify-between items-center">
+                <p id="selectedAddress"
+                    class="text-sm text-slate-400 truncate mr-6 font-mono bg-slate-800 px-3 py-1 rounded border border-slate-700">
+                    Click on map to select...</p>
+                <button onclick="confirmLocation()"
+                    class="bg-green-600 hover:bg-green-500 text-white px-6 py-2.5 rounded-xl font-bold transition shadow-lg shadow-green-900/20 active:scale-95">
+                    Confirm Location
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript (Preserved) -->
+    <script>
+        let map, marker, debounceTimer;
+
+        // Auto-complete (Same logic)
+        document.getElementById('mapSearch').addEventListener('input', function (e) {
+            clearTimeout(debounceTimer);
+            const query = e.target.value;
+            const suggestionsList = document.getElementById('searchSuggestions');
+            if (query.length < 3) { suggestionsList.classList.add('hidden'); return; }
+
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`);
+                    const data = await response.json();
+                    suggestionsList.innerHTML = '';
+                    if (data.length > 0) {
+                        suggestionsList.classList.remove('hidden');
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.className = "p-3 hover:bg-blue-50 cursor-pointer text-sm transition-colors";
+                            li.innerText = item.display_name;
+                            li.onclick = () => selectSuggestion(item.lat, item.lon, item.display_name);
+                            suggestionsList.appendChild(li);
+                        });
+                    } else { suggestionsList.classList.add('hidden'); }
+                } catch (err) { console.error(err); }
+            }, 300);
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#mapSearch') && !e.target.closest('#searchSuggestions')) {
+                document.getElementById('searchSuggestions').classList.add('hidden');
+            }
+        });
+
+        function selectSuggestion(lat, lon, displayName) {
+            document.getElementById('mapSearch').value = displayName;
+            document.getElementById('searchSuggestions').classList.add('hidden');
+            map.setView([lat, lon], 16);
+            placeMarker(lat, lon);
+        }
+
+        async function detectLocation() {
+            const input = document.getElementById('locationInput');
+            input.value = "📍 Detecting...";
+            if (!navigator.geolocation) { alert("Geolocation not supported."); input.value = ""; return; }
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const { latitude: lat, longitude: lon } = pos.coords;
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                    const data = await res.json();
+                    input.value = data.display_name || `${lat}, ${lon}`;
+                } catch (e) { input.value = `${lat}, ${lon}`; alert("Address lookup failed."); }
+            }, (err) => {
+                input.value = "";
+                let msg = "Location unavailable.";
+                if (err.code === 1) msg = "User denied location access.";
+                else if (err.code === 2) msg = "Location signal weak/unavailable.";
+                alert(msg + " Try using the Map button.");
+            }, { enableHighAccuracy: true });
+        }
+
+        function openMap() {
+            document.getElementById('mapModal').classList.remove('hidden');
+            if (!map) {
+                map = L.map('map').setView([25.5941, 85.1376], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+                map.on('click', e => placeMarker(e.latlng.lat, e.latlng.lng));
+            } else { setTimeout(() => map.invalidateSize(), 100); }
+        }
+
+        function closeMap() { document.getElementById('mapModal').classList.add('hidden'); }
+
+        async function searchLocation() {
+            const query = document.getElementById('mapSearch').value;
+            if (!query) return;
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                if (data.length) {
+                    map.setView([data[0].lat, data[0].lon], 15);
+                    placeMarker(data[0].lat, data[0].lon);
+                } else alert('Not found');
+            } catch (e) { alert('Search failed'); }
+        }
+
+        async function placeMarker(lat, lng) {
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lng]).addTo(map);
+            document.getElementById('selectedAddress').innerText = "Loading...";
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                const data = await res.json();
+                document.getElementById('selectedAddress').innerText = data.display_name || `${lat}, ${lng}`;
+            } catch (e) { document.getElementById('selectedAddress').innerText = `${lat}, ${lng}`; }
+        }
+
+        function confirmLocation() {
+            const addr = document.getElementById('selectedAddress').innerText;
+            if (addr && !addr.includes("Click on map") && !addr.includes("Loading")) {
+                document.getElementById('locationInput').value = addr;
+                closeMap();
+            } else alert("Please select a location.");
+        }
+    </script>
+</body>
+
+</html>

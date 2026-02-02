@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Admin Portal - Nagar Alert Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-900 text-slate-200 font-sans">
+
+    <nav class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-lg border-b border-slate-700">
+        <div class="flex items-center space-x-4">
+            <h1 class="text-xl font-bold">Nagar Alert Hub <span class="text-blue-400">| ADMIN</span></h1>
+            <div class="bg-blue-600 px-4 py-1 rounded text-sm font-bold shadow-lg">
+                <span th:text="${deptName}">DEPT</span> PANEL
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="/" onclick="confirmExit(event)"
+                class="text-slate-400 hover:text-white transition text-sm flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                    </path>
+                </svg>
+                Hub
+            </a>
+            <a href="/logout"
+                class="bg-slate-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 hover:border-red-500">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                    </path>
+                </svg>
+                Logout
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-8 p-4">
+        <h2 class="text-2xl font-bold mb-4 text-slate-300">Incoming Alerts</h2>
+
+        <div class="overflow-x-auto bg-slate-800 rounded-lg shadow-xl">
+            <table class="w-full text-left text-sm text-slate-300">
+                <thead class="bg-slate-700 text-xs uppercase text-slate-400">
+                    <tr>
+                        <th class="px-6 py-3">Location</th>
+                        <th class="px-6 py-3">Description</th>
+                        <th class="px-6 py-3">Department</th>
+                        <th class="px-6 py-3">Severity</th>
+                        <th class="px-6 py-3">Time</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-700">
+                    <tr th:each="alert : ${alerts}" class="hover:bg-slate-700 transition">
+                        <td class="px-6 py-4 font-medium text-white" th:text="${alert.location}">Location</td>
+                        <td class="px-6 py-4" th:text="${alert.description}">Description</td>
+                        <td class="px-6 py-4 font-bold text-blue-300" th:text="${alert.department}">Dept</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 rounded text-xs font-bold" th:text="${alert.severity}"
+                                th:classappend="${alert.severity.name() == 'CRITICAL'} ? 'bg-red-900 text-red-200' :
+                                              (${alert.severity.name() == 'HIGH'} ? 'bg-orange-900 text-orange-200' :
+                                              (${alert.severity.name() == 'MEDIUM'} ? 'bg-yellow-900 text-yellow-200' : 'bg-blue-900 text-blue-200'))">
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-500"
+                            th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy, hh:mm a')}">Time</td>
+                        <td class="px-6 py-4">
+                            <span th:if="${alert.verified}" class="text-green-400 font-bold flex items-center">
+                                <span class="mr-1">✓</span> Resolved
+                            </span>
+                            <span th:unless="${alert.verified}" class="text-yellow-500 italic">Open</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <!-- Verify Button (Unverified) -->
+                            <form th:unless="${alert.verified}" th:action="@{/admin/verify/{id}(id=${alert.alertId})}"
+                                method="post">
+                                <input type="hidden" name="dept" th:value="${deptName}" />
+                                <button type="submit"
+                                    class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-bold transition flex items-center shadow-lg shadow-green-900/50">
+                                    <span class="mr-1">✅</span> Verify
+                                </button>
+                            </form>
+
+                            <!-- Resolve Button (Verified) -->
+                            <form th:if="${alert.verified}" th:action="@{/admin/resolve/{id}(id=${alert.alertId})}"
+                                method="post"
+                                onsubmit="return confirm('Are you sure this issue is resolved? It will be removed from the feed.');">
+                                <input type="hidden" name="dept" th:value="${deptName}" />
+                                <button type="submit"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition flex items-center shadow-lg shadow-blue-900/50">
+                                    <span class="mr-1">🗑️</span> Resolve
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${alerts.empty}">
+                        <td colspan="7" class="px-6 py-8 text-center text-slate-500">
+                            No active alerts for <span th:text="${deptName}">DEPARTMENT</span>. Good job!
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Security Exit Modal -->
+    <div id="exitModal"
+        class="fixed inset-0 bg-black bg-opacity-80 hidden z-50 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-slate-800 border border-slate-600 rounded-lg shadow-2xl p-6 max-w-sm w-full text-center">
+            <div class="text-4xl mb-4">🛡️</div>
+            <h3 class="text-xl font-bold text-white mb-2">Secure Session Active</h3>
+            <p class="text-slate-400 text-sm mb-6">You are navigating away from the Admin Panel. For security, your
+                session should be closed.</p>
+
+            <div class="flex space-x-3 justify-center">
+                <button onclick="closeExitModal()"
+                    class="px-4 py-2 rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white transition text-sm font-semibold">
+                    Cancel
+                </button>
+                <a href="/logout"
+                    class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-lg transition text-sm font-bold flex items-center">
+                    <span class="mr-2">🔒</span> Logout & Exit
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmExit(event) {
+            event.preventDefault();
+            document.getElementById('exitModal').classList.remove('hidden');
+        }
+
+        function closeExitModal() {
+            document.getElementById('exitModal').classList.add('hidden');
+        }
+    </script>
+</body>
+
+</html>

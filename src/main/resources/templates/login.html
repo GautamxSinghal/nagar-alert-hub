@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Official Login - Nagar Alert Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function selectDepartment(dept, name, colorClass) {
+            // Hide Grid, Show Form
+            document.getElementById('dept-grid').classList.add('hidden');
+            document.getElementById('login-form-container').classList.remove('hidden');
+
+            // Set Inputs
+            document.getElementById('dept-input').value = dept;
+            document.getElementById('dept-name-display').innerText = name;
+            document.getElementById('dept-icon-display').className = "text-4xl mb-2 " + colorClass;
+        }
+
+        function showGrid() {
+            // Hide Form, Show Grid
+            document.getElementById('login-form-container').classList.add('hidden');
+            document.getElementById('dept-grid').classList.remove('hidden');
+        }
+    </script>
+</head>
+
+<body class="bg-slate-900 flex items-center justify-center min-h-screen text-slate-200 font-sans">
+
+    <div class="w-full max-w-4xl p-4">
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-white tracking-wider">Nagar Alert Hub <span class="text-blue-500">|
+                    ADMIN</span></h1>
+            <p class="text-slate-400 mt-2">Select your department to access the control panel</p>
+        </div>
+
+        <!-- Error Message -->
+        <div th:if="${param.error}"
+            class="max-w-md mx-auto bg-red-900/50 border border-red-500 text-red-200 px-4 py-2 rounded mb-6 text-center">
+            Invalid Username or Password. Please try again.
+        </div>
+        <div th:if="${param.logout}"
+            class="max-w-md mx-auto bg-green-900/50 border border-green-500 text-green-200 px-4 py-2 rounded mb-6 text-center">
+            Logged out successfully.
+        </div>
+
+        <!-- 1. Department Grid -->
+        <div id="dept-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+            <!-- Police -->
+            <div onclick="selectDepartment('POLICE', 'Police Department', 'text-blue-400')"
+                class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-blue-500 p-6 rounded-xl cursor-pointer transition transform hover:-translate-y-1 text-center group">
+                <div class="flex justify-center mb-3">
+                    <img src="/images/bihar_police_logo.png" alt="Bihar Police" class="h-16 object-contain">
+                </div>
+                <h3 class="font-bold text-lg group-hover:text-blue-400">Police</h3>
+                <p class="text-xs text-slate-500 mt-1">Crime, Theft, Safety</p>
+            </div>
+
+            <!-- Fire -->
+            <div onclick="selectDepartment('FIRE', 'Fire Brigade', 'text-red-500')"
+                class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-red-500 p-6 rounded-xl cursor-pointer transition transform hover:-translate-y-1 text-center group">
+                <div class="flex justify-center mb-3">
+                    <img src="/images/bihar_fire_service_logo.png" alt="Bihar Fire Service" class="h-16 object-contain">
+                </div>
+                <h3 class="font-bold text-lg group-hover:text-red-500">Fire</h3>
+                <p class="text-xs text-slate-500 mt-1">Fire, Blast, Rescue</p>
+            </div>
+
+            <!-- Medical -->
+            <div onclick="selectDepartment('MEDICAL', 'Medical / Health', 'text-green-400')"
+                class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-green-400 p-6 rounded-xl cursor-pointer transition transform hover:-translate-y-1 text-center group">
+                <div class="flex justify-center mb-3">
+                    <img src="/images/bihar_health_logo.png" alt="Bihar Health Dept" class="h-16 object-contain">
+                </div>
+                <h3 class="font-bold text-lg group-hover:text-green-400">Medical</h3>
+                <p class="text-xs text-slate-500 mt-1">Ambulance, Injury</p>
+            </div>
+
+            <!-- Electrical -->
+            <div onclick="selectDepartment('ELECTRICAL', 'Electricity Board', 'text-yellow-400')"
+                class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-yellow-400 p-6 rounded-xl cursor-pointer transition transform hover:-translate-y-1 text-center group">
+                <div class="flex justify-center mb-3">
+                    <img src="/images/bihar_electricity_logo.png" alt="Bihar Electricity Board"
+                        class="h-16 object-contain">
+                </div>
+                <h3 class="font-bold text-lg group-hover:text-yellow-400">Electrical</h3>
+                <p class="text-xs text-slate-500 mt-1">Power, Wires, Voltage</p>
+            </div>
+
+            <!-- Municipal -->
+            <div onclick="selectDepartment('MUNICIPAL', 'Municipal Corp', 'text-orange-400')"
+                class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-orange-400 p-6 rounded-xl cursor-pointer transition transform hover:-translate-y-1 text-center group">
+                <div class="flex justify-center mb-3">
+                    <img src="/images/patna_municipal_logo.png" alt="Patna Municipal Corporation"
+                        class="h-16 object-contain">
+                </div>
+                <h3 class="font-bold text-lg group-hover:text-orange-400">Municipal</h3>
+                <p class="text-xs text-slate-500 mt-1">Roads, Water, Civic</p>
+            </div>
+
+            <!-- Traffic -->
+            <div onclick="selectDepartment('TRAFFIC', 'Traffic Police', 'text-purple-400')"
+                class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-purple-400 p-6 rounded-xl cursor-pointer transition transform hover:-translate-y-1 text-center group">
+                <div class="text-4xl mb-3">🚦</div>
+                <h3 class="font-bold text-lg group-hover:text-purple-400">Traffic</h3>
+                <p class="text-xs text-slate-500 mt-1">Jams, Signals</p>
+            </div>
+
+            <!-- Central -->
+            <div onclick="selectDepartment('ALL', 'Central Command', 'text-white')"
+                class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-white p-6 rounded-xl cursor-pointer transition transform hover:-translate-y-1 text-center group col-span-2 md:col-span-1 border-dashed">
+                <div class="text-4xl mb-3">🌐</div>
+                <h3 class="font-bold text-lg group-hover:text-white">Central</h3>
+                <p class="text-xs text-slate-500 mt-1">View All Alerts</p>
+            </div>
+
+        </div>
+
+        <!-- 2. Login Form (Hidden) -->
+        <div id="login-form-container"
+            class="hidden max-w-md mx-auto bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700 relative">
+
+            <button onclick="showGrid()" class="absolute top-4 left-4 text-slate-500 hover:text-white transition">
+                ← Back
+            </button>
+
+            <div class="text-center mb-6 mt-2">
+                <div id="dept-icon-display" class="text-4xl mb-2"></div>
+                <h2 id="dept-name-display" class="text-2xl font-bold text-white">Department</h2>
+                <p class="text-sm text-slate-500">Enter credentials to access</p>
+            </div>
+
+            <form action="/login" method="post" class="space-y-4">
+                <input type="hidden" name="department" id="dept-input">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Username</label>
+                    <input type="text" name="username"
+                        class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-white focus:border-blue-500 focus:outline-none placeholder-slate-600"
+                        placeholder="e.g. admin">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Password</label>
+                    <input type="password" name="password"
+                        class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-white focus:border-blue-500 focus:outline-none placeholder-slate-600"
+                        placeholder="••••••••">
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded transition mt-4">
+                    Login
+                </button>
+            </form>
+        </div>
+
+        <div class="mt-12 text-center">
+            <a href="/" class="text-slate-600 hover:text-slate-400 text-sm transition">← Return to Public Hub</a>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
