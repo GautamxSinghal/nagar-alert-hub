@@ -3,20 +3,49 @@ package com.nagaralert.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+
 /**
  * Represents an alert in the Nagar Alert Hub system.
  * Implements Serializable for object serialization.
  */
+@Entity
 public class Alert implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Id
     private String alertId;
+    
+    @Column(length = 2000)
     private String description;
+    
     private String location;
+    
+    @Enumerated(EnumType.STRING)
     private Severity severity;
+    
     private String department;
     private LocalDateTime timestamp;
-    private boolean isVerified;
+    
+    @Enumerated(EnumType.STRING)
+    private AlertStatus status;
+    
+    private Double latitude;
+    private Double longitude;
+    private int upvotes;
+    
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "ai_reason", length = 500)
+    private String aiReason;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
     /**
      * Default constructor.
@@ -33,17 +62,25 @@ public class Alert implements Serializable {
      * @param severity    Severity level of the alert
      * @param department  Department handling the alert
      * @param timestamp   Time when the alert occurred
-     * @param isVerified  Verification status of the alert
+     * @param status      Current status of the alert
+     * @param latitude    Latitude coordinate
+     * @param longitude   Longitude coordinate
+     * @param upvotes     Number of upvotes from citizens
+     * @param phoneNumber Citizen's phone number
      */
     public Alert(String alertId, String description, String location, Severity severity, String department,
-            LocalDateTime timestamp, boolean isVerified) {
+            LocalDateTime timestamp, AlertStatus status, Double latitude, Double longitude, int upvotes, String phoneNumber) {
         this.alertId = alertId;
         this.description = description;
         this.location = location;
         this.severity = severity;
         this.department = department;
         this.timestamp = timestamp;
-        this.isVerified = isVerified;
+        this.status = status;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.upvotes = upvotes;
+        this.phoneNumber = phoneNumber;
     }
 
     /**
@@ -155,21 +192,69 @@ public class Alert implements Serializable {
     }
 
     /**
-     * Checks if the alert is verified.
+     * Gets the status.
      *
-     * @return true if verified, false otherwise
+     * @return the status
      */
-    public boolean isVerified() {
-        return isVerified;
+    public AlertStatus getStatus() {
+        return status;
     }
 
     /**
-     * Sets the verification status.
+     * Sets the status.
      *
-     * @param verified the verification status to set
+     * @param status the status to set
      */
-    public void setVerified(boolean verified) {
-        isVerified = verified;
+    public void setStatus(AlertStatus status) {
+        this.status = status;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public int getUpvotes() {
+        return upvotes;
+    }
+
+    public void setUpvotes(int upvotes) {
+        this.upvotes = upvotes;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getAiReason() {
+        return aiReason;
+    }
+
+    public void setAiReason(String aiReason) {
+        this.aiReason = aiReason;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     @Override
@@ -181,7 +266,11 @@ public class Alert implements Serializable {
                 ", severity=" + severity +
                 ", department='" + department + '\'' +
                 ", timestamp=" + timestamp +
-                ", isVerified=" + isVerified +
+                ", status=" + status +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", upvotes=" + upvotes +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
     }
 }

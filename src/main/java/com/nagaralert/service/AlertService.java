@@ -1,6 +1,7 @@
 package com.nagaralert.service;
 
 import com.nagaralert.model.Alert;
+import com.nagaralert.model.AlertStatus;
 import java.util.List;
 
 /**
@@ -14,14 +15,6 @@ public interface AlertService {
      * @return The reported Alert object, or null if duplicate/invalid
      */
     Alert reportAlert(Alert alert);
-
-    /**
-     * Verifies an alert.
-     *
-     * @param alertId The ID of the alert to verify
-     * @return true if verification was successful, false otherwise
-     */
-    boolean verifyAlert(String alertId);
 
     /**
      * Searches for alerts by location.
@@ -44,8 +37,36 @@ public interface AlertService {
      * @param department The department name
      * @return List of alerts for the department
      */
-
     List<Alert> getAlertsByDepartment(String department);
 
+    /**
+     * Retrieves alerts by phone number.
+     *
+     * @param phoneNumber The phone number to search for
+     * @return List of alerts for the phone number
+     */
+    List<Alert> getAlertsByPhoneNumber(String phoneNumber);
+
+    /**
+     * Updates the status of an alert.
+     *
+     * @param alertId The ID of the alert
+     * @param status The new status
+     * @return true if successful
+     */
+    boolean updateStatus(String alertId, AlertStatus status);
+
+    /**
+     * Deletes an alert.
+     *
+     * @param alertId The ID of the alert to delete
+     */
     void deleteAlert(String alertId);
+
+    /**
+     * Upvotes an alert.
+     *
+     * @param alertId The ID of the alert to upvote
+     */
+    void upvoteAlert(String alertId);
 }

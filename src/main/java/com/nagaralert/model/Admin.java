@@ -28,7 +28,7 @@ public class Admin extends User {
      */
     public void verifyAlert(Alert alert) {
         if (alert != null) {
-            alert.setVerified(true);
+            alert.setStatus(AlertStatus.IN_PROGRESS);
             System.out.println("Alert " + alert.getAlertId() + " has been verified by Admin " + getName());
         }
     }

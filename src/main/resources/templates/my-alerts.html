@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Track My Alert - Nagar Alert Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-200 min-h-screen relative overflow-x-hidden">
+
+    <!-- Background Decoration -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[100px]">
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-40 border-b border-slate-800">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div
+                    class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-xl shadow-lg shadow-blue-900/50">
+                    📢
+                </div>
+                <h1
+                    class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 tracking-tight">
+                    <a href="/">Nagar Alert Hub</a>
+                </h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- NORSK/ENGLISH Arcade Style Toggle -->
+                <div
+                    class="flex items-center space-x-3 bg-black/30 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner mr-2">
+                    <span id="labelEn"
+                        class="text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500"
+                        onclick="setLanguage('en')">EN</span>
+
+                    <button id="langToggleBtn" onclick="toggleLanguage()"
+                        class="relative flex items-center w-12 h-5 rounded-full border-2 border-slate-600 focus:outline-none bg-black/50 mx-1">
+                        <div id="langToggleKnob"
+                            class="absolute flex items-center justify-center transition-transform duration-300 ease-in-out"
+                            style="width: 18px; height: 18px; left: -2px;">
+                            <div id="langToggleStick"
+                                class="absolute w-4 h-1 bg-slate-400 transition-transform duration-300 origin-left"
+                                style="transform: rotate(-25deg); left: 50%;"></div>
+                            <div
+                                class="w-full h-full rounded-full bg-pink-500 z-10 relative shadow-[0_0_10px_rgba(236,72,153,0.8)] flex items-start justify-start p-1 cursor-pointer hover:bg-pink-400 transition-colors">
+                                <div class="w-1.5 h-1.5 bg-white/90 rounded-full"></div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <span id="labelHi"
+                        class="text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200"
+                        onclick="setLanguage('hi')">हिं</span>
+                </div>
+                <a href="/"
+                    class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition hover:bg-white/5 rounded-full"
+                    data-i18n="nav_back">←
+                    Back to Hub</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-10 p-6 max-w-4xl">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-white mb-2" data-i18n="track_title">Track Your Alert</h2>
+            <p class="text-slate-400" data-i18n="track_desc">Enter the phone number you used to report an incident to
+                check its current status.
+            </p>
+        </div>
+
+        <!-- Search Form -->
+        <div class="glass p-6 rounded-2xl shadow-xl max-w-xl mx-auto mb-10">
+            <form action="/my-alerts" method="get" class="flex gap-4">
+                <input type="text" name="phone" th:value="${phone}" placeholder="Enter phone number (e.g. 9876543210)"
+                    data-i18n-placeholder="ph_phone" required
+                    class="flex-1 p-4 rounded-xl bg-slate-900/50 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-600 text-lg">
+                <button type="submit"
+                    class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold px-8 py-4 rounded-xl shadow-lg shadow-blue-900/20 transition transform active:scale-95 text-lg"
+                    data-i18n="btn_track">
+                    Track
+                </button>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div th:if="${phone != null}">
+
+            <div th:if="${alerts == null || alerts.empty}"
+                class="glass p-12 rounded-2xl text-center border-dashed border-2 border-slate-700 max-w-2xl mx-auto">
+                <div class="text-5xl mb-4 opacity-50">🔍</div>
+                <h3 class="text-xl font-semibold text-white" data-i18n="no_alerts_title">No alerts found</h3>
+                <p class="text-slate-400 mt-2" data-i18n="no_alerts_desc">We couldn't find any active alerts associated
+                    with <span class="font-bold text-slate-300" th:text="${phone}"></span>.</p>
+            </div>
+
+            <div th:if="${alerts != null && !alerts.empty}" class="space-y-6 max-w-3xl mx-auto">
+                <h3 class="text-xl font-bold text-slate-300 mb-4 flex items-center">
+                    <span class="mr-2">📋</span> Found <span th:text="${alerts.size()}"
+                        class="mx-1.5 text-blue-400"></span> alert(s)
+                </h3>
+
+                <div th:each="alert : ${alerts}"
+                    class="fade-in relative overflow-hidden glass rounded-xl p-6 border border-slate-700 transition duration-300">
+
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-slate-400 text-sm font-mono mb-1"
+                                th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy, hh:mm a')}">Time</p>
+                            <h4 class="text-lg font-bold text-white mb-2" th:text="${alert.description}">Description
+                            </h4>
+                            <p class="text-slate-300 text-sm flex items-center">
+                                <span class="mr-1 opacity-70">📍</span>
+                                <span th:text="${alert.location}">Location</span>
+                            </p>
+                        </div>
+
+                        <!-- Status Badge Large -->
+                        <div class="ml-4 shrink-0">
+                            <div th:if="${alert.status?.name() == 'PENDING'}"
+                                class="flex flex-col items-center bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 p-3 rounded-xl min-w-[120px]">
+                                <span class="text-2xl mb-1">⏳</span>
+                                <span class="text-xs font-bold tracking-wider uppercase"
+                                    data-i18n="status_pending">Pending</span>
+                            </div>
+                            <div th:if="${alert.status?.name() == 'IN_PROGRESS'}"
+                                class="flex flex-col items-center bg-blue-500/10 border border-blue-500/30 text-blue-400 p-3 rounded-xl min-w-[120px]">
+                                <span class="text-2xl mb-1">👷</span>
+                                <span class="text-xs font-bold tracking-wider uppercase" data-i18n="status_progress">In
+                                    Progress</span>
+                            </div>
+                            <div th:if="${alert.status?.name() == 'RESOLVED'}"
+                                class="flex flex-col items-center bg-green-500/10 border border-green-500/30 text-green-400 p-3 rounded-xl min-w-[120px]">
+                                <span class="text-2xl mb-1">✅</span>
+                                <span class="text-xs font-bold tracking-wider uppercase"
+                                    data-i18n="status_resolved">Resolved</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-800 pt-4 mt-2 flex flex-wrap gap-4 text-sm">
+                        <div class="bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center">
+                            <span class="text-slate-500 mr-2" data-i18n="lbl_dept">Dept:</span>
+                            <span class="font-bold text-blue-300" th:text="${alert.department}">DEPT</span>
+                        </div>
+                        <div class="bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center">
+                            <span class="text-slate-500 mr-2" data-i18n="lbl_severity">Severity:</span>
+                            <span class="font-bold"
+                                th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'text-red-400' : 
+                                                  (${alert.severity?.name() == 'HIGH'} ? 'text-orange-400' : 
+                                                  (${alert.severity?.name() == 'MEDIUM'} ? 'text-yellow-400' : 'text-blue-400'))"
+                                th:text="${alert.severity}">SEV</span>
+                        </div>
+                        <div class="bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center">
+                            <span class="text-slate-500 mr-2" data-i18n="lbl_support">Support:</span>
+                            <span class="font-bold text-slate-300">👍 <span th:text="${alert.upvotes}">0</span></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-20 py-8 border-t border-slate-800 text-center text-slate-600 text-sm">
+        <p data-i18n="footer">&copy; 2026 Nagar Alert Hub. Protecting the City.</p>
+    </footer>
+
+
+    <!-- Language Translation Engine -->
+    <script>
+        const translations = {
+            hi: {
+                nav_back: '← हब पर वापस',
+                track_title: 'अपनी शिकायत ट्रैक करें',
+                track_desc: 'अपनी शिकायत की स्थिति जानने के लिए वो फ़ोन नंबर दर्ज करें जिससे आपने शिकायत दर्ज की थी।',
+                btn_track: 'ट्रैक करें',
+                no_alerts_title: 'कोई शिकायत नहीं मिली',
+                no_alerts_desc: 'इस नंबर से कोई सक्रिय शिकायत नहीं मिली।',
+                status_pending: 'लंबित',
+                status_progress: 'प्रगति में',
+                status_resolved: 'समाधान',
+                lbl_dept: 'विभाग:',
+                lbl_severity: 'गंभीरता:',
+                lbl_support: 'समर्थन:',
+                footer: '© 2026 नगर अलर्ट हब। शहर की सुरक्षा।',
+                ph_phone: 'फ़ोन नंबर दर्ज करें (जैसे 9876543210)'
+            },
+            en: {
+                nav_back: '← Back to Hub',
+                track_title: 'Track Your Alert',
+                track_desc: 'Enter the phone number you used to report an incident to check its current status.',
+                btn_track: 'Track',
+                no_alerts_title: 'No alerts found',
+                no_alerts_desc: "We couldn't find any active alerts associated with this number.",
+                status_pending: 'Pending',
+                status_progress: 'In Progress',
+                status_resolved: 'Resolved',
+                lbl_dept: 'Dept:',
+                lbl_severity: 'Severity:',
+                lbl_support: 'Support:',
+                footer: '© 2026 Nagar Alert Hub. Protecting the City.',
+                ph_phone: 'Enter phone number (e.g. 9876543210)'
+            }
+        };
+
+        let currentLang = localStorage.getItem('nagarLang') || 'hi';
+
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            if (!t) return;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (t[key]) el.placeholder = t[key];
+            });
+
+            // Arcade Lever UI Update
+            const labelHi = document.getElementById('labelHi');
+            const labelEn = document.getElementById('labelEn');
+            const knob = document.getElementById('langToggleKnob');
+            const stick = document.getElementById('langToggleStick');
+
+            if (labelHi && labelEn && knob && stick) {
+                if (lang === 'en') {
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500";
+                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    knob.style.transform = "translateX(0)";
+                    stick.style.transform = "rotate(-25deg)";
+                } else {
+                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-blue-500";
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    knob.style.transform = "translateX(30px)";
+                    stick.style.transform = "rotate(-155deg)";
+                }
+            }
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('nagarLang', currentLang);
+            applyTranslations(currentLang);
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'hi' ? 'en' : 'hi';
+            localStorage.setItem('nagarLang', currentLang);
+            applyTranslations(currentLang);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => applyTranslations(currentLang));
+    </script>
+</body>
+
+</html>

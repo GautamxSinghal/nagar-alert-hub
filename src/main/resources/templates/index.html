@@ -7,8 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -36,6 +39,40 @@
                 transform: translateY(0);
             }
         }
+
+        /* Custom MarkerCluster styling for dark theme */
+        .marker-cluster-small {
+            background-color: rgba(59, 130, 246, 0.5) !important;
+        }
+
+        .marker-cluster-small div {
+            background-color: rgba(59, 130, 246, 0.85) !important;
+            color: #fff !important;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .marker-cluster-medium {
+            background-color: rgba(249, 115, 22, 0.5) !important;
+        }
+
+        .marker-cluster-medium div {
+            background-color: rgba(249, 115, 22, 0.85) !important;
+            color: #fff !important;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .marker-cluster-large {
+            background-color: rgba(239, 68, 68, 0.5) !important;
+        }
+
+        .marker-cluster-large div {
+            background-color: rgba(239, 68, 68, 0.85) !important;
+            color: #fff !important;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
 
@@ -61,13 +98,44 @@
                     Nagar Alert Hub</h1>
             </div>
             <div class="flex items-center space-x-4">
+                <!-- NORSK/ENGLISH Arcade Style Toggle -->
+                <div
+                    class="flex items-center space-x-3 bg-black/30 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner mr-2">
+                    <span id="labelEn"
+                        class="text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500"
+                        onclick="setLanguage('en')">EN</span>
+
+                    <button id="langToggleBtn" onclick="toggleLanguage()"
+                        class="relative flex items-center w-12 h-5 rounded-full border-2 border-slate-600 focus:outline-none bg-black/50 mx-1">
+                        <div id="langToggleKnob"
+                            class="absolute flex items-center justify-center transition-transform duration-300 ease-in-out"
+                            style="width: 18px; height: 18px; left: -2px;">
+                            <div id="langToggleStick"
+                                class="absolute w-4 h-1 bg-slate-400 transition-transform duration-300 origin-left"
+                                style="transform: rotate(-25deg); left: 50%;"></div>
+                            <div
+                                class="w-full h-full rounded-full bg-pink-500 z-10 relative shadow-[0_0_10px_rgba(236,72,153,0.8)] flex items-start justify-start p-1 cursor-pointer hover:bg-pink-400 transition-colors">
+                                <div class="w-1.5 h-1.5 bg-white/90 rounded-full"></div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <span id="labelHi"
+                        class="text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200"
+                        onclick="setLanguage('hi')">हिं</span>
+                </div>
+                <a href="/my-alerts"
+                    class="px-4 py-2 text-sm font-semibold text-blue-400 hover:text-blue-300 transition hover:bg-blue-500/10 rounded-full"
+                    data-i18n="nav_track">Track
+                    My Alert</a>
                 <a href="/admin"
-                    class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition hover:bg-white/5 rounded-full">Admin
+                    class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition hover:bg-white/5 rounded-full"
+                    data-i18n="nav_admin">Admin
                     Portal →</a>
             </div>
         </div>
         <div class="bg-red-600/90 text-white text-center text-sm font-bold py-1 animate-pulse"
-            th:if="${criticalCount > 0}">
+            th:if="${criticalCount > 0}" data-i18n="critical_banner">
             ⚠️ CRITICAL ALERTS ACTIVE IN YOUR AREA
         </div>
     </nav>
@@ -78,17 +146,20 @@
         <div class="lg:col-span-1">
             <div class="glass p-8 rounded-2xl shadow-2xl sticky top-28">
                 <h2 class="text-2xl font-bold mb-6 text-white flex items-center">
-                    <span class="mr-3 text-blue-500">✍️</span> Report Incident
+                    <span class="mr-3 text-blue-500">✍️</span> <span data-i18n="form_title">Report Incident</span>
                 </h2>
-                <form action="/report" method="post" class="space-y-5">
+                <form id="reportForm" action="/report" method="post" enctype="multipart/form-data" class="space-y-5">
+
+                    <input type="hidden" id="latInput" name="latitude">
+                    <input type="hidden" id="lngInput" name="longitude">
 
                     <!-- Location Input -->
                     <div>
-                        <label
-                            class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Location</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
+                            data-i18n="label_location">Location</label>
                         <div class="space-y-2">
                             <input type="text" id="locationInput" name="location"
-                                placeholder="Enter landmark or street..." required
+                                placeholder="Enter landmark or street..." data-i18n-placeholder="ph_location" required
                                 class="w-full p-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-600">
 
                             <div class="flex space-x-2">
@@ -104,44 +175,70 @@
                         </div>
                     </div>
 
+                    <!-- Phone Number Input -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"><span
+                                data-i18n="label_phone">Phone Number</span>
+                            <span class="text-slate-600 lowercase font-normal" data-i18n="label_phone_opt">(Optional for
+                                tracking)</span></label>
+                        <input type="text" name="phoneNumber" placeholder="e.g. 9876543210"
+                            class="w-full p-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-600">
+                    </div>
+
                     <!-- Description Input -->
                     <div>
-                        <label
-                            class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Description</label>
-                        <textarea name="description" rows="4" placeholder="Describe the incident clearly..." required
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
+                            data-i18n="label_desc">Description</label>
+                        <textarea name="description" rows="4" placeholder="Describe the incident clearly..."
+                            data-i18n-placeholder="ph_desc" required
                             class="w-full p-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-600 resize-none"></textarea>
+                    </div>
+
+                    <!-- Photo Upload -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"><span
+                                data-i18n="label_photo">Photo</span>
+                            <span class="text-slate-600 lowercase font-normal" data-i18n="label_photo_opt">(Optional but
+                                recommended)</span></label>
+                        <input type="file" name="image" accept="image/*"
+                            class="w-full p-2 rounded-lg bg-slate-900/50 border border-slate-700 text-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition">
                     </div>
 
                     <button type="submit"
                         class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-900/20 transition transform active:scale-95">
-                        Submit Report
+                        <span data-i18n="btn_submit">Submit Report</span>
                     </button>
-                    <p class="text-xs text-center text-slate-500 mt-4">Your report helps keep the city safe.</p>
+                    <p class="text-xs text-center text-slate-500 mt-4" data-i18n="form_footer">Your report helps keep
+                        the city safe.</p>
                 </form>
             </div>
         </div>
 
         <!-- Live Feed Column -->
         <div class="lg:col-span-2 space-y-6">
+
             <div class="flex items-center justify-between mb-2">
                 <h2 class="text-2xl font-bold text-white flex items-center">
                     <span class="w-2 h-8 bg-blue-500 rounded-full mr-3"></span>
-                    Live City Feed
+                    <span data-i18n="feed_title">Live City Map & Feed</span>
                 </h2>
-                <span class="text-slate-500 text-sm">Real-time updates</span>
+                <span class="text-slate-500 text-sm" data-i18n="feed_subtitle">Real-time updates</span>
             </div>
+
+            <!-- Global Map Container -->
+            <div id="globalMap" class="w-full h-72 rounded-2xl shadow-lg border border-slate-700 z-0"></div>
 
             <!-- Empty State -->
             <div th:if="${alerts.empty}"
-                class="glass p-12 rounded-2xl text-center border-dashed border-2 border-slate-700">
+                class="glass p-12 rounded-2xl text-center border-dashed border-2 border-slate-700 mt-6">
                 <div class="text-6xl mb-4 opacity-50">🌆</div>
-                <h3 class="text-xl font-semibold text-white">All Clear</h3>
-                <p class="text-slate-400 mt-2">No active incidents reported in the city.</p>
+                <h3 class="text-xl font-semibold text-white" data-i18n="empty_title">All Clear</h3>
+                <p class="text-slate-400 mt-2" data-i18n="empty_desc">No active incidents reported in the city.</p>
             </div>
 
             <!-- Alerts List -->
             <div th:each="alert : ${alerts}"
-                class="fade-in group relative overflow-hidden glass rounded-xl p-0 hover:border-slate-600 transition duration-300">
+                class="fade-in group relative overflow-hidden glass rounded-xl p-0 hover:border-slate-600 transition duration-300 mt-4">
 
                 <!-- Severity Strip -->
                 <div class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300" th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'bg-red-500' : 
@@ -152,14 +249,18 @@
                 <div class="p-5 pl-8 flex justify-between items-start">
                     <div class="space-y-3 flex-1">
                         <div class="flex items-center flex-wrap gap-2">
-                            <!-- Status Badge -->
-                            <span th:if="${alert.verified}"
+                            <!-- Status Badges -->
+                            <span th:if="${alert.status?.name() == 'RESOLVED'}"
                                 class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-green-500/20 text-green-400 ring-1 ring-inset ring-green-500/40">
-                                <span class="mr-1">✅</span> VERIFIED
+                                <span class="mr-1">✅</span> RESOLVED
                             </span>
-                            <span th:unless="${alert.verified}"
+                            <span th:if="${alert.status?.name() == 'IN_PROGRESS'}"
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-500/20 text-blue-400 ring-1 ring-inset ring-blue-500/40">
+                                <span class="mr-1">👷</span> IN PROGRESS
+                            </span>
+                            <span th:if="${alert.status?.name() == 'PENDING'}"
                                 class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-yellow-500/10 text-yellow-500 ring-1 ring-inset ring-yellow-500/20">
-                                <span class="mr-1">⏳</span> PENDING VERIFICATION
+                                <span class="mr-1">⏳</span> PENDING
                             </span>
 
                             <span
@@ -180,23 +281,38 @@
                         <p class="text-slate-200 text-lg leading-relaxed" th:text="${alert.description}">Description...
                         </p>
 
-                        <div class="pt-2 flex items-center text-xs text-slate-500 font-mono">
-                            <span class="mr-2">🕒</span>
-                            <span th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy, hh:mm a')}">Time</span>
-                            <span class="mx-2">•</span>
-                            <span th:text="${alert.department}" class="text-slate-400">DEPT</span>
+                        <div class="pt-2 flex flex-wrap items-center text-xs text-slate-500 font-mono gap-4">
+                            <div>
+                                <span class="mr-1">🕒</span>
+                                <span
+                                    th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy, hh:mm a')}">Time</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-1">🏢</span>
+                                <span th:text="${alert.department}" class="text-slate-400">DEPT</span>
+                            </div>
+
+                            <!-- Upvote Form -->
+                            <form th:action="@{/alert/{id}/upvote(id=${alert.alertId})}" method="post"
+                                class="flex items-center m-0">
+                                <button type="submit"
+                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700 hover:border-slate-500 group">
+                                    <span class="group-hover:scale-110 transition-transform">👍</span>
+                                    <span class="font-bold" th:text="${alert.upvotes}">0</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
 
                     <!-- Icon based on Severity/Dept -->
                     <div
-                        class="hidden sm:flex items-center justify-center w-12 h-12 rounded-full bg-slate-800/50 text-2xl border border-slate-700 shadow-inner ml-4">
-                        <span th:if="${alert.department == 'POLICE'}">👮</span>
-                        <span th:if="${alert.department == 'FIRE'}">🚒</span>
-                        <span th:if="${alert.department == 'MEDICAL'}">🚑</span>
-                        <span th:if="${alert.department == 'ELECTRICAL'}">⚡</span>
-                        <span th:if="${alert.department == 'MUNICIPAL'}">🏗️</span>
-                        <span th:if="${alert.department == 'TRAFFIC'}">🚦</span>
+                        class="hidden sm:flex items-center justify-center w-12 h-12 rounded-full bg-slate-800/50 text-2xl border border-slate-700 shadow-inner ml-4 shrink-0">
+                        <span th:if="${alert.department == 'Police'}">👮</span>
+                        <span th:if="${alert.department == 'Fire'}">🚒</span>
+                        <span th:if="${alert.department == 'Medical'}">🚑</span>
+                        <span th:if="${alert.department == 'Electrical'}">⚡</span>
+                        <span th:if="${alert.department == 'Municipal'}">🏗️</span>
+                        <span th:if="${alert.department == 'Traffic'}">🚦</span>
                         <span th:if="${alert.department == null}">📢</span>
                     </div>
                 </div>
@@ -206,7 +322,7 @@
 
     <!-- Footer -->
     <footer class="mt-20 py-8 border-t border-slate-800 text-center text-slate-600 text-sm">
-        <p>&copy; 2026 Nagar Alert Hub. Protecting the City.</p>
+        <p data-i18n="footer">&copy; 2026 Nagar Alert Hub. Protecting the City.</p>
     </footer>
 
     <!-- Map Modal (Preserved Functionality) -->
@@ -215,7 +331,8 @@
         <div
             class="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col border border-slate-700 overflow-hidden">
             <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900">
-                <h3 class="text-xl font-bold text-white flex items-center"><span class="mr-2">📍</span> Select Location
+                <h3 class="text-xl font-bold text-white flex items-center"><span class="mr-2">📍</span> <span
+                        data-i18n="modal_select_loc">Select Location</span>
                 </h3>
                 <button onclick="closeMap()"
                     class="text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-800 text-lg">&times;</button>
@@ -225,6 +342,7 @@
                 <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 w-[90%] max-w-md">
                     <div class="flex shadow-2xl relative group">
                         <input type="text" id="mapSearch" placeholder="Search area (e.g. Gandhi Maidan)..."
+                            data-i18n-placeholder="ph_map_search"
                             class="w-full p-3 pl-4 rounded-l-xl bg-white/95 text-slate-900 focus:outline-none border-0 shadow-lg text-sm font-medium backdrop-blur"
                             autocomplete="off">
                         <button onclick="searchLocation()"
@@ -247,9 +365,73 @@
         </div>
     </div>
 
-    <!-- JavaScript (Preserved) -->
-    <script>
+    <!-- JavaScript -->
+    <script th:inline="javascript">
+        /* Global Map Initialization */
+        var alertsData = /*[[${alerts}]]*/[];
+
+        var globalMap = L.map('globalMap').setView([25.5941, 85.1376], 12); // Default to Patna
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(globalMap);
+
+        var bounds = [];
+        var clusterGroup = L.markerClusterGroup({
+            maxClusterRadius: 50,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true,
+            disableClusteringAtZoom: 17
+        });
+
+        alertsData.forEach(function (alert) {
+            if (alert.latitude && alert.longitude) {
+                var markerColor = '#3b82f6'; // blue (LOW)
+                if (alert.severity === 'CRITICAL') markerColor = '#ef4444'; // red
+                else if (alert.severity === 'HIGH') markerColor = '#f97316'; // orange
+                else if (alert.severity === 'MEDIUM') markerColor = '#eab308'; // yellow
+
+                if (alert.status === 'RESOLVED') {
+                    markerColor = '#22c55e'; // green if resolved
+                }
+
+                var deptEmoji = '📢';
+                if (alert.department === 'Police') deptEmoji = '👮';
+                else if (alert.department === 'Fire') deptEmoji = '🚒';
+                else if (alert.department === 'Medical') deptEmoji = '🚑';
+                else if (alert.department === 'Electrical') deptEmoji = '⚡';
+                else if (alert.department === 'Municipal') deptEmoji = '🏗️';
+                else if (alert.department === 'Traffic') deptEmoji = '🚦';
+
+                var customIcon = L.divIcon({
+                    html: `<div style="background:${markerColor};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 8px ${markerColor}80;font-size:16px;">${deptEmoji}</div>`,
+                    className: '',
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16],
+                    popupAnchor: [0, -16]
+                });
+
+                var marker = L.marker([alert.latitude, alert.longitude], { icon: customIcon });
+
+                var popupContent = `<b>${deptEmoji} ${alert.department || 'Alert'}</b><br>
+                                    ${alert.description.substring(0, 80)}...<br>
+                                    <span style="color:${markerColor};font-weight:bold">${alert.status}</span>`;
+                marker.bindPopup(popupContent);
+                clusterGroup.addLayer(marker);
+                bounds.push([alert.latitude, alert.longitude]);
+            }
+        });
+
+        globalMap.addLayer(clusterGroup);
+
+        if (bounds.length > 0) {
+            globalMap.fitBounds(bounds, { padding: [20, 20], maxZoom: 15 });
+        }
+
+
+        /* Location selection logic */
         let map, marker, debounceTimer;
+        let selectedLat = null, selectedLng = null;
 
         // Auto-complete (Same logic)
         document.getElementById('mapSearch').addEventListener('input', function (e) {
@@ -267,7 +449,7 @@
                         suggestionsList.classList.remove('hidden');
                         data.forEach(item => {
                             const li = document.createElement('li');
-                            li.className = "p-3 hover:bg-blue-50 cursor-pointer text-sm transition-colors";
+                            li.className = "p-3 hover:bg-blue-50 cursor-pointer text-slate-800 text-sm transition-colors";
                             li.innerText = item.display_name;
                             li.onclick = () => selectSuggestion(item.lat, item.lon, item.display_name);
                             suggestionsList.appendChild(li);
@@ -297,6 +479,9 @@
 
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const { latitude: lat, longitude: lon } = pos.coords;
+                document.getElementById('latInput').value = lat;
+                document.getElementById('lngInput').value = lon;
+
                 try {
                     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
                     const data = await res.json();
@@ -336,6 +521,8 @@
         }
 
         async function placeMarker(lat, lng) {
+            selectedLat = lat;
+            selectedLng = lng;
             if (marker) map.removeLayer(marker);
             marker = L.marker([lat, lng]).addTo(map);
             document.getElementById('selectedAddress').innerText = "Loading...";
@@ -350,9 +537,149 @@
             const addr = document.getElementById('selectedAddress').innerText;
             if (addr && !addr.includes("Click on map") && !addr.includes("Loading")) {
                 document.getElementById('locationInput').value = addr;
+                document.getElementById('latInput').value = selectedLat;
+                document.getElementById('lngInput').value = selectedLng;
                 closeMap();
             } else alert("Please select a location.");
         }
+
+        document.getElementById('reportForm').addEventListener('submit', async function (e) {
+            const latInput = document.getElementById('latInput');
+            const lngInput = document.getElementById('lngInput');
+
+            // If lat/lng are already set by GPS or Map, let it submit normally
+            if (latInput.value && lngInput.value) {
+                return;
+            }
+
+            e.preventDefault(); // Stop submission to geocode first
+            const loc = document.getElementById('locationInput').value;
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+
+            if (loc) {
+                submitBtn.innerText = "Locating...";
+                submitBtn.disabled = true;
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc)}&limit=1`);
+                    const data = await res.json();
+                    if (data.length > 0) {
+                        latInput.value = data[0].lat;
+                        lngInput.value = data[0].lon;
+                    }
+                } catch (err) {
+                    console.error("Geocoding failed", err);
+                }
+            }
+
+            this.submit(); // Submit the form programmatically
+        });
+    </script>
+
+    <!-- Language Translation Engine -->
+    <script>
+        const translations = {
+            hi: {
+                nav_track: 'मेरी शिकायत ट्रैक करें',
+                nav_admin: 'प्रशासन पोर्टल →',
+                critical_banner: '⚠️ आपके क्षेत्र में गंभीर अलर्ट सक्रिय हैं',
+                form_title: 'शिकायत दर्ज करें',
+                label_location: 'स्थान',
+                label_phone: 'फ़ोन नंबर',
+                label_phone_opt: '(ट्रैकिंग के लिए वैकल्पिक)',
+                label_desc: 'विवरण',
+                label_photo: 'फोटो',
+                label_photo_opt: '(वैकल्पिक पर अनुशंसित)',
+                btn_submit: 'शिकायत दर्ज करें',
+                form_footer: 'आपकी रिपोर्ट शहर को सुरक्षित रखने में मदद करती है।',
+                feed_title: 'लाइव शहर का नक्शा और फ़ीड',
+                feed_subtitle: 'रीयल-टाइम अपडेट',
+                empty_title: 'सब ठीक है',
+                empty_desc: 'शहर में कोई सक्रिय घटना दर्ज नहीं है।',
+                footer: '© 2026 नगर अलर्ट हब। शहर की सुरक्षा।',
+                modal_select_loc: 'स्थान चुनें',
+                ph_location: 'स्थान या सड़क का नाम दर्ज करें...',
+                ph_desc: 'घटना का स्पष्ट विवरण दें...',
+                ph_map_search: 'क्षेत्र खोजें (जैसे गांधी मैदान)...'
+            },
+            en: {
+                nav_track: 'Track My Alert',
+                nav_admin: 'Admin Portal →',
+                critical_banner: '⚠️ CRITICAL ALERTS ACTIVE IN YOUR AREA',
+                form_title: 'Report Incident',
+                label_location: 'Location',
+                label_phone: 'Phone Number',
+                label_phone_opt: '(Optional for tracking)',
+                label_desc: 'Description',
+                label_photo: 'Photo',
+                label_photo_opt: '(Optional but recommended)',
+                btn_submit: 'Submit Report',
+                form_footer: 'Your report helps keep the city safe.',
+                feed_title: 'Live City Map & Feed',
+                feed_subtitle: 'Real-time updates',
+                empty_title: 'All Clear',
+                empty_desc: 'No active incidents reported in the city.',
+                footer: '© 2026 Nagar Alert Hub. Protecting the City.',
+                modal_select_loc: 'Select Location',
+                ph_location: 'Enter landmark or street...',
+                ph_desc: 'Describe the incident clearly...',
+                ph_map_search: 'Search area (e.g. Gandhi Maidan)...'
+            }
+        };
+
+        let currentLang = localStorage.getItem('nagarLang') || 'hi';
+
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            if (!t) return;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (t[key]) el.placeholder = t[key];
+            });
+
+            // Arcade Lever UI Update
+            const labelHi = document.getElementById('labelHi');
+            const labelEn = document.getElementById('labelEn');
+            const knob = document.getElementById('langToggleKnob');
+            const stick = document.getElementById('langToggleStick');
+
+            if (labelHi && labelEn && knob && stick) {
+                if (lang === 'en') {
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500";
+                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    knob.style.transform = "translateX(0)";
+                    stick.style.transform = "rotate(-25deg)";
+                } else {
+                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-blue-500";
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    knob.style.transform = "translateX(30px)";
+                    stick.style.transform = "rotate(-155deg)";
+                }
+            }
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('nagarLang', currentLang);
+            applyTranslations(currentLang);
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'hi' ? 'en' : 'hi';
+            localStorage.setItem('nagarLang', currentLang);
+            applyTranslations(currentLang);
+        }
+
+        // Apply saved language on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTranslations(currentLang);
+        });
     </script>
 </body>
 

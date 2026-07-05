@@ -1,13 +1,22 @@
 package com.nagaralert.controller;
 
+import com.nagaralert.model.AlertStatus;
 import com.nagaralert.service.AlertService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nagaralert.model.Alert;
 
 @Controller
 public class AdminController {
@@ -23,51 +32,65 @@ public class AdminController {
         return "login";
     }
 
-    @PostMapping("/login")
-    public String doLogin(@RequestParam String username, @RequestParam String password, @RequestParam String department,
-            HttpSession session) {
-        // Simple authentication logic
-        // In a real app, this would check against a database or secure config
-        if ("admin".equals(username) && "admin123".equals(password)) {
-            session.setAttribute("loggedIn", true);
-            session.setAttribute("department", department);
-            return "redirect:/admin";
-        }
-        // Redirect back to login with error and preserve the selected department so we
-        // can show the form again if needed
-        // For simplicity, just general error
-        return "redirect:/login?error";
-    }
-
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login"; // Changed from ?logout to clean URL
-    }
+    // Spring Security will handle the POST /login and POST /logout requests
 
     @GetMapping("/admin")
-    public String adminDashboard(Model model, HttpSession session) {
-        // Security check
-        if (session.getAttribute("loggedIn") == null) {
-            return "redirect:/login";
-        }
-
-        String department = (String) session.getAttribute("department");
-        model.addAttribute("alerts", alertService.getAlertsByDepartment(department));
-        model.addAttribute("deptName", department);
+    public String adminDashboard(Model model, @RequestParam(required = false, defaultValue = "ALL") String dept) {
+        model.addAttribute("alerts", alertService.getAlertsByDepartment(dept));
+        model.addAttribute("deptName", dept);
         return "admin";
     }
 
+    @GetMapping("/admin/dashboard")
+    public String analyticsDashboard(Model model, @RequestParam(required = false, defaultValue = "ALL") String dept) {
+        List<Alert> allAlerts = alertService.getAlertsByDepartment(dept);
+        long totalAlerts = allAlerts.size();
+        
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        long alertsToday = allAlerts.stream()
+            .filter(a -> a.getTimestamp() != null && a.getTimestamp().isAfter(startOfDay))
+            .count();
+            
+        long resolvedAlerts = allAlerts.stream()
+            .filter(a -> a.getStatus() == AlertStatus.RESOLVED)
+            .count();
+        double resolutionRate = totalAlerts > 0 ? (double) resolvedAlerts / totalAlerts * 100 : 0.0;
+        
+        Map<String, Long> byDept = allAlerts.stream()
+            .filter(a -> a.getDepartment() != null)
+            .collect(Collectors.groupingBy(Alert::getDepartment, Collectors.counting()));
+            
+        Map<String, Long> bySeverity = allAlerts.stream()
+            .filter(a -> a.getSeverity() != null)
+            .collect(Collectors.groupingBy(a -> a.getSeverity().name(), Collectors.counting()));
+            
+        model.addAttribute("totalAlerts", totalAlerts);
+        model.addAttribute("alertsToday", alertsToday);
+        model.addAttribute("resolutionRate", Math.round(resolutionRate));
+        model.addAttribute("deptName", dept);
+        
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            model.addAttribute("deptDataJson", mapper.writeValueAsString(byDept));
+            model.addAttribute("severityDataJson", mapper.writeValueAsString(bySeverity));
+        } catch (Exception e) {
+            model.addAttribute("deptDataJson", "{}");
+            model.addAttribute("severityDataJson", "{}");
+        }
+        
+        return "dashboard";
+    }
+
     @PostMapping("/admin/verify/{id}")
-    public String verifyAlert(@PathVariable String id, @RequestParam String dept) {
-        alertService.verifyAlert(id);
-        return "redirect:/admin";
+    public String verifyAlert(@PathVariable String id, @RequestParam(required = false) String dept) {
+        alertService.updateStatus(id, AlertStatus.IN_PROGRESS);
+        return "redirect:/admin" + (dept != null ? "?dept=" + dept : "");
     }
 
     @PostMapping("/admin/resolve/{id}")
-    public String resolveAlert(@PathVariable String id, @RequestParam String dept) {
-        alertService.deleteAlert(id);
-        return "redirect:/admin";
+    public String resolveAlert(@PathVariable String id, @RequestParam(required = false) String dept) {
+        alertService.updateStatus(id, AlertStatus.RESOLVED);
+        return "redirect:/admin" + (dept != null ? "?dept=" + dept : "");
     }
 
 }

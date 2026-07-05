@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Analytics Dashboard - Nagar Alert Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-slate-900 text-slate-200 font-sans min-h-screen">
+
+    <nav class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-lg border-b border-slate-700">
+        <div class="flex items-center space-x-4">
+            <h1 class="text-xl font-bold">Nagar Alert Hub <span class="text-blue-400">| ANALYTICS</span> <span
+                    class="text-xs ml-2 text-slate-500 uppercase" th:text="'[' + ${deptName} + ']'"></span></h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <!-- NORSK/ENGLISH Arcade Style Toggle -->
+            <div
+                class="flex items-center space-x-3 bg-black/30 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner mr-2">
+                <span id="labelEn"
+                    class="text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500"
+                    onclick="setLanguage('en')">EN</span>
+
+                <button id="langToggleBtn" onclick="toggleLanguage()"
+                    class="relative flex items-center w-12 h-5 rounded-full border-2 border-slate-600 focus:outline-none bg-black/50 mx-1">
+                    <div id="langToggleKnob"
+                        class="absolute flex items-center justify-center transition-transform duration-300 ease-in-out"
+                        style="width: 18px; height: 18px; left: -2px;">
+                        <div id="langToggleStick"
+                            class="absolute w-4 h-1 bg-slate-400 transition-transform duration-300 origin-left"
+                            style="transform: rotate(-25deg); left: 50%;"></div>
+                        <div
+                            class="w-full h-full rounded-full bg-pink-500 z-10 relative shadow-[0_0_10px_rgba(236,72,153,0.8)] flex items-start justify-start p-1 cursor-pointer hover:bg-pink-400 transition-colors">
+                            <div class="w-1.5 h-1.5 bg-white/90 rounded-full"></div>
+                        </div>
+                    </div>
+                </button>
+
+                <span id="labelHi"
+                    class="text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200"
+                    onclick="setLanguage('hi')">हिं</span>
+            </div>
+            <a th:href="@{/admin(dept=${deptName})}"
+                class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 shadow-lg">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                <span data-i18n="dash_back">Back to Control Panel</span>
+            </a>
+            <a href="/logout"
+                class="bg-slate-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 hover:border-red-500">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                    </path>
+                </svg>
+                <span data-i18n="dash_logout">Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-8 p-4">
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div
+                class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col items-center justify-center">
+                <p class="text-slate-400 text-sm uppercase tracking-wider font-bold mb-1" data-i18n="dash_today">Total
+                    Alerts Today</p>
+                <p class="text-5xl font-bold text-blue-400" th:text="${alertsToday}">0</p>
+            </div>
+            <div
+                class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col items-center justify-center">
+                <p class="text-slate-400 text-sm uppercase tracking-wider font-bold mb-1" data-i18n="dash_lifetime">
+                    Total Active Lifetime</p>
+                <p class="text-5xl font-bold text-white" th:text="${totalAlerts}">0</p>
+            </div>
+            <div
+                class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col items-center justify-center">
+                <p class="text-slate-400 text-sm uppercase tracking-wider font-bold mb-1" data-i18n="dash_resolution">
+                    Resolution Rate</p>
+                <p class="text-5xl font-bold text-green-400" th:text="${resolutionRate} + '%' ">0%</p>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Bar Chart -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
+                <h3 class="text-lg font-bold text-white mb-4" data-i18n="dash_by_dept">Alerts by Department</h3>
+                <div class="relative h-64">
+                    <canvas id="deptChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Donut Chart -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col items-center">
+                <h3 class="text-lg font-bold text-white mb-4 w-full text-left" data-i18n="dash_by_sev">Alerts by
+                    Severity</h3>
+                <div class="w-full max-w-[16rem] relative h-64 flex justify-center items-center">
+                    <canvas id="severityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Inject JSON Data -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const deptData = /*[[${deptDataJson}]]*/ '{}';
+        const severityData = /*[[${severityDataJson}]]*/ '{}';
+        /*]]>*/
+    </script>
+
+    <!-- Chart Configuration -->
+    <script>
+        // Parse the data safely
+        let deptObj = {};
+        let sevObj = {};
+        try {
+            deptObj = JSON.parse(deptData);
+            sevObj = JSON.parse(severityData);
+        } catch (e) { console.error("Error parsing JSON data"); }
+
+        // Setup Department Bar Chart
+        const deptCtx = document.getElementById('deptChart').getContext('2d');
+        new Chart(deptCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(deptObj).length > 0 ? Object.keys(deptObj) : ['No Data'],
+                datasets: [{
+                    label: 'Alerts',
+                    data: Object.keys(deptObj).length > 0 ? Object.values(deptObj) : [0],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',  // Police (blue)
+                        'rgba(239, 68, 68, 0.8)',   // Fire (red)
+                        'rgba(16, 185, 129, 0.8)',  // Medical (green)
+                        'rgba(245, 158, 11, 0.8)',  // Electrical (yellow)
+                        'rgba(249, 115, 22, 0.8)',  // Municipal (orange)
+                        'rgba(168, 85, 247, 0.8)'   // Traffic (purple)
+                    ],
+                    borderColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(239, 68, 68)',
+                        'rgb(16, 185, 129)',
+                        'rgb(245, 158, 11)',
+                        'rgb(249, 115, 22)',
+                        'rgb(168, 85, 247)'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', stepSize: 1 } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // Setup Severity Donut Chart
+        const sevCtx = document.getElementById('severityChart').getContext('2d');
+        new Chart(sevCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(sevObj).length > 0 ? Object.keys(sevObj) : ['No Data'],
+                datasets: [{
+                    data: Object.keys(sevObj).length > 0 ? Object.values(sevObj) : [1], // 1 for visual grey circle
+                    backgroundColor: Object.keys(sevObj).length > 0 ? [
+                        'rgba(220, 38, 38, 0.8)',   // CRITICAL
+                        'rgba(234, 88, 12, 0.8)',   // HIGH
+                        'rgba(202, 138, 4, 0.8)',   // MEDIUM
+                        'rgba(37, 99, 235, 0.8)'    // LOW
+                    ] : ['rgba(255, 255, 255, 0.1)'],
+                    borderColor: 'rgba(30, 41, 59, 1)', // match slate-800 bg
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 20 } }
+                }
+            }
+        });
+    </script>
+
+    <!-- Language Translation Engine -->
+    <script>
+        const translations = {
+            hi: {
+                dash_back: 'नियंत्रण पैनल पर वापस',
+                dash_logout: 'लॉग आउट',
+                dash_today: 'आज की कुल शिकायतें',
+                dash_lifetime: 'कुल सक्रिय शिकायतें',
+                dash_resolution: 'समाधान दर',
+                dash_by_dept: 'विभाग के अनुसार शिकायतें',
+                dash_by_sev: 'गंभीरता के अनुसार शिकायतें'
+            },
+            en: {
+                dash_back: 'Back to Control Panel',
+                dash_logout: 'Logout',
+                dash_today: 'Total Alerts Today',
+                dash_lifetime: 'Total Active Lifetime',
+                dash_resolution: 'Resolution Rate',
+                dash_by_dept: 'Alerts by Department',
+                dash_by_sev: 'Alerts by Severity'
+            }
+        };
+        let currentLang = localStorage.getItem('nagarLang') || 'hi';
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            if (!t) return;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+
+            // Arcade Lever UI Update
+            const labelHi = document.getElementById('labelHi');
+            const labelEn = document.getElementById('labelEn');
+            const knob = document.getElementById('langToggleKnob');
+            const stick = document.getElementById('langToggleStick');
+
+            if (labelHi && labelEn && knob && stick) {
+                if (lang === 'en') {
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500";
+                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    knob.style.transform = "translateX(0)";
+                    stick.style.transform = "rotate(-25deg)";
+                } else {
+                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-blue-500";
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    knob.style.transform = "translateX(30px)";
+                    stick.style.transform = "rotate(-155deg)";
+                }
+            }
+        }
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('nagarLang', currentLang);
+            applyTranslations(currentLang);
+        }
+        function toggleLanguage() {
+            currentLang = currentLang === 'hi' ? 'en' : 'hi';
+            localStorage.setItem('nagarLang', currentLang);
+            applyTranslations(currentLang);
+        }
+        document.addEventListener('DOMContentLoaded', () => applyTranslations(currentLang));
+    </script>
+</body>
+
+</html>

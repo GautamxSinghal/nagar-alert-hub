@@ -16,84 +16,152 @@
             </div>
         </div>
         <div class="flex items-center space-x-4">
-            <a href="/" onclick="confirmExit(event)"
-                class="text-slate-400 hover:text-white transition text-sm flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                    </path>
-                </svg>
-                Hub
-            </a>
-            <a href="/logout"
-                class="bg-slate-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 hover:border-red-500">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                    </path>
-                </svg>
-                Logout
-            </a>
+        <!-- NORSK/ENGLISH Arcade Style Toggle -->
+        <div
+            class="flex items-center space-x-3 bg-black/30 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner mr-2">
+            <span id="labelEn"
+                class="text-xs font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500"
+                onclick="setLanguage('en')">EN</span>
+
+            <button id="langToggleBtn" onclick="toggleLanguage()"
+                class="relative flex items-center w-12 h-5 rounded-full border-2 border-slate-600 focus:outline-none bg-black/50 mx-1">
+                <div id="langToggleKnob"
+                    class="absolute flex items-center justify-center transition-transform duration-300 ease-in-out"
+                    style="width: 18px; height: 18px; left: -2px;">
+                    <div id="langToggleStick"
+                        class="absolute w-4 h-1 bg-slate-400 transition-transform duration-300 origin-left"
+                        style="transform: rotate(-25deg); left: 50%;"></div>
+                    <div
+                        class="w-full h-full rounded-full bg-pink-500 z-10 relative shadow-[0_0_10px_rgba(236,72,153,0.8)] flex items-start justify-start p-1 cursor-pointer hover:bg-pink-400 transition-colors">
+                        <div class="w-1.5 h-1.5 bg-white/90 rounded-full"></div>
+                    </div>
+                </div>
+            </button>
+
+            <span id="labelHi"
+                class="text-xs font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200"
+                onclick="setLanguage('hi')">हिं</span>
+        </div>
+        <a th:href="@{/admin/dashboard(dept=${deptName})}"
+            class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center shadow-lg border border-blue-500">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                </path>
+            </svg>
+            <span data-i18n="admin_analytics">View Analytics</span>
+        </a>
+        <a href="/" onclick="confirmExit(event)"
+            class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 shadow-lg">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                </path>
+            </svg>
+            <span data-i18n="admin_hub">Hub</span>
+        </a>
+        <a href="/logout"
+            class="bg-slate-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 hover:border-red-500">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                </path>
+            </svg>
+            <span data-i18n="admin_logout">Logout</span>
+        </a>
         </div>
     </nav>
 
     <div class="container mx-auto mt-8 p-4">
-        <h2 class="text-2xl font-bold mb-4 text-slate-300">Incoming Alerts</h2>
+        <h2 class="text-2xl font-bold mb-4 text-slate-300" data-i18n="admin_incoming">Incoming Alerts</h2>
 
         <div class="overflow-x-auto bg-slate-800 rounded-lg shadow-xl">
             <table class="w-full text-left text-sm text-slate-300">
                 <thead class="bg-slate-700 text-xs uppercase text-slate-400">
                     <tr>
-                        <th class="px-6 py-3">Location</th>
-                        <th class="px-6 py-3">Description</th>
-                        <th class="px-6 py-3">Department</th>
-                        <th class="px-6 py-3">Severity</th>
-                        <th class="px-6 py-3">Time</th>
-                        <th class="px-6 py-3">Status</th>
-                        <th class="px-6 py-3">Action</th>
+                        <th class="px-6 py-3" data-i18n="th_location">Location</th>
+                        <th class="px-6 py-3" data-i18n="th_desc">Description</th>
+                        <th class="px-6 py-3" data-i18n="th_dept">Department</th>
+                        <th class="px-6 py-3" data-i18n="th_severity">Severity</th>
+                        <th class="px-6 py-3" data-i18n="th_time">Time</th>
+                        <th class="px-6 py-3" data-i18n="th_status">Status</th>
+                        <th class="px-6 py-3" data-i18n="th_action">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-700">
                     <tr th:each="alert : ${alerts}" class="hover:bg-slate-700 transition">
                         <td class="px-6 py-4 font-medium text-white" th:text="${alert.location}">Location</td>
-                        <td class="px-6 py-4" th:text="${alert.description}">Description</td>
-                        <td class="px-6 py-4 font-bold text-blue-300" th:text="${alert.department}">Dept</td>
+                        <td class="px-6 py-4">
+                            <span th:text="${alert.description}">Description</span>
+                            <div th:if="${alert.imageUrl != null}" class="mt-2">
+                                <a th:href="${alert.imageUrl}" target="_blank">
+                                    <img th:src="${alert.imageUrl}"
+                                        class="w-32 h-20 object-cover rounded-lg border border-slate-600 hover:opacity-80 transition cursor-pointer"
+                                        alt="Incident Photo">
+                                </a>
+                            </div>
+                            <div class="mt-2 flex items-center gap-1 text-slate-400 text-xs">
+                                <span>👍</span> <span th:text="${alert.upvotes}">0</span> upvotes
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="font-bold text-blue-300" th:text="${alert.department}">Dept</span>
+                            <div th:if="${alert.aiReason != null}"
+                                class="text-xs text-slate-400 italic mt-2 bg-slate-800 p-2 rounded border border-slate-700">
+                                💡 <span th:text="${alert.aiReason}">Reason</span>
+                            </div>
+                        </td>
                         <td class="px-6 py-4">
                             <span class="px-2 py-1 rounded text-xs font-bold" th:text="${alert.severity}"
-                                th:classappend="${alert.severity.name() == 'CRITICAL'} ? 'bg-red-900 text-red-200' :
-                                              (${alert.severity.name() == 'HIGH'} ? 'bg-orange-900 text-orange-200' :
-                                              (${alert.severity.name() == 'MEDIUM'} ? 'bg-yellow-900 text-yellow-200' : 'bg-blue-900 text-blue-200'))">
+                                th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'bg-red-900 text-red-200' :
+                                              (${alert.severity?.name() == 'HIGH'} ? 'bg-orange-900 text-orange-200' :
+                                              (${alert.severity?.name() == 'MEDIUM'} ? 'bg-yellow-900 text-yellow-200' : 'bg-blue-900 text-blue-200'))">
                             </span>
                         </td>
                         <td class="px-6 py-4 text-slate-500"
                             th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy, hh:mm a')}">Time</td>
                         <td class="px-6 py-4">
-                            <span th:if="${alert.verified}" class="text-green-400 font-bold flex items-center">
+                            <span th:if="${alert.status?.name() == 'RESOLVED'}"
+                                class="text-green-400 font-bold flex items-center">
                                 <span class="mr-1">✓</span> Resolved
                             </span>
-                            <span th:unless="${alert.verified}" class="text-yellow-500 italic">Open</span>
+                            <span th:if="${alert.status?.name() == 'IN_PROGRESS'}"
+                                class="text-blue-400 font-bold flex items-center">
+                                <span class="mr-1">👷</span> In Progress
+                            </span>
+                            <span th:if="${alert.status?.name() == 'PENDING'}"
+                                class="text-yellow-500 italic flex items-center">
+                                <span class="mr-1">⏳</span> Pending
+                            </span>
                         </td>
                         <td class="px-6 py-4">
-                            <!-- Verify Button (Unverified) -->
-                            <form th:unless="${alert.verified}" th:action="@{/admin/verify/{id}(id=${alert.alertId})}"
-                                method="post">
-                                <input type="hidden" name="dept" th:value="${deptName}" />
-                                <button type="submit"
-                                    class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-bold transition flex items-center shadow-lg shadow-green-900/50">
-                                    <span class="mr-1">✅</span> Verify
-                                </button>
-                            </form>
+                            <div class="flex gap-2">
+                                <!-- Verify Button (Pending -> In Progress) -->
+                                <form th:if="${alert.status?.name() == 'PENDING'}"
+                                    th:action="@{/admin/verify/{id}(id=${alert.alertId})}" method="post">
+                                    <input type="hidden" name="dept" th:value="${deptName}" />
+                                    <button type="submit"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition flex items-center shadow-lg shadow-blue-900/50">
+                                        <span class="mr-1">👷</span> In Progress
+                                    </button>
+                                </form>
 
-                            <!-- Resolve Button (Verified) -->
-                            <form th:if="${alert.verified}" th:action="@{/admin/resolve/{id}(id=${alert.alertId})}"
-                                method="post"
-                                onsubmit="return confirm('Are you sure this issue is resolved? It will be removed from the feed.');">
-                                <input type="hidden" name="dept" th:value="${deptName}" />
-                                <button type="submit"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition flex items-center shadow-lg shadow-blue-900/50">
-                                    <span class="mr-1">🗑️</span> Resolve
-                                </button>
-                            </form>
+                                <!-- Resolve Button (In Progress -> Resolved) -->
+                                <form th:if="${alert.status?.name() == 'IN_PROGRESS'}"
+                                    th:action="@{/admin/resolve/{id}(id=${alert.alertId})}" method="post"
+                                    onsubmit="return confirm('Are you sure this issue is resolved?');">
+                                    <input type="hidden" name="dept" th:value="${deptName}" />
+                                    <button type="submit"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-bold transition flex items-center shadow-lg shadow-green-900/50">
+                                        <span class="mr-1">✅</span> Resolve
+                                    </button>
+                                </form>
+
+                                <span th:if="${alert.status?.name() == 'RESOLVED'}"
+                                    class="text-slate-500 text-xs italic">
+                                    Completed
+                                </span>
+                            </div>
                         </td>
                     </tr>
                     <tr th:if="${alerts.empty}">
@@ -111,18 +179,19 @@
         class="fixed inset-0 bg-black bg-opacity-80 hidden z-50 flex items-center justify-center backdrop-blur-sm">
         <div class="bg-slate-800 border border-slate-600 rounded-lg shadow-2xl p-6 max-w-sm w-full text-center">
             <div class="text-4xl mb-4">🛡️</div>
-            <h3 class="text-xl font-bold text-white mb-2">Secure Session Active</h3>
-            <p class="text-slate-400 text-sm mb-6">You are navigating away from the Admin Panel. For security, your
+            <h3 class="text-xl font-bold text-white mb-2" data-i18n="modal_title">Secure Session Active</h3>
+            <p class="text-slate-400 text-sm mb-6" data-i18n="modal_desc">You are navigating away from the Admin Panel.
+                For security, your
                 session should be closed.</p>
 
             <div class="flex space-x-3 justify-center">
                 <button onclick="closeExitModal()"
                     class="px-4 py-2 rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white transition text-sm font-semibold">
-                    Cancel
+                    <span data-i18n="modal_cancel">Cancel</span>
                 </button>
                 <a href="/logout"
                     class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-lg transition text-sm font-bold flex items-center">
-                    <span class="mr-2">🔒</span> Logout & Exit
+                    <span class="mr-2">🔒</span> <span data-i18n="modal_logout">Logout & Exit</span>
                 </a>
             </div>
         </div>
@@ -137,6 +206,86 @@
         function closeExitModal() {
             document.getElementById('exitModal').classList.add('hidden');
         }
+    </script>
+
+    <!-- Language Translation Engine -->
+    <script>
+        const translations = {
+            hi: {
+                admin_analytics: 'एनालिटिक्स देखें',
+                admin_hub: 'हब',
+                admin_logout: 'लॉग आउट',
+                admin_incoming: 'आने वाली शिकायतें',
+                th_location: 'स्थान',
+                th_desc: 'विवरण',
+                th_dept: 'विभाग',
+                th_severity: 'गंभीरता',
+                th_time: 'समय',
+                th_status: 'स्थिति',
+                th_action: 'कार्रवाई',
+                modal_title: 'सुरक्षित सत्र सक्रिय',
+                modal_desc: 'आप एडमिन पैनल से बाहर जा रहे हैं। सुरक्षा के लिए, आपका सत्र बंद होना चाहिए।',
+                modal_cancel: 'रद्द करें',
+                modal_logout: 'लॉग आउट और बाहर जाएं'
+            },
+            en: {
+                admin_analytics: 'View Analytics',
+                admin_hub: 'Hub',
+                admin_logout: 'Logout',
+                admin_incoming: 'Incoming Alerts',
+                th_location: 'Location',
+                th_desc: 'Description',
+                th_dept: 'Department',
+                th_severity: 'Severity',
+                th_time: 'Time',
+                th_status: 'Status',
+                th_action: 'Action',
+                modal_title: 'Secure Session Active',
+                modal_desc: 'You are navigating away from the Admin Panel. For security, your session should be closed.',
+                modal_cancel: 'Cancel',
+                modal_logout: 'Logout & Exit'
+            }
+        };
+        let currentLang = localStorage.getItem('nagarLang') || 'hi';
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            if (!t) return;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+
+            // Arcade Lever UI Update
+            const labelHi = document.getElementById('labelHi');
+            const labelEn = document.getElementById('labelEn');
+            const knob = document.getElementById('langToggleKnob');
+            const stick = document.getElementById('langToggleStick');
+
+            if (labelHi && labelEn && knob && stick) {
+                if (lang === 'en') {
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500";
+                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    knob.style.transform = "translateX(0)";
+                    stick.style.transform = "rotate(-25deg)";
+                } else {
+                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-blue-500";
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    knob.style.transform = "translateX(30px)";
+                    stick.style.transform = "rotate(-155deg)";
+                }
+            }
+        }
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('nagarLang', currentLang);
+            applyTranslations(currentLang);
+        }
+        function toggleLanguage() {
+            currentLang = currentLang === 'hi' ? 'en' : 'hi';
+            localStorage.setItem('nagarLang', currentLang);
+            applyTranslations(currentLang);
+        }
+        document.addEventListener('DOMContentLoaded', () => applyTranslations(currentLang));
     </script>
 </body>
 

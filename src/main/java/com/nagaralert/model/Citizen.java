@@ -37,7 +37,7 @@ public class Citizen extends User {
         alert.setLocation(location);
         alert.setSeverity(severity);
         alert.setTimestamp(java.time.LocalDateTime.now());
-        alert.setVerified(false); // Alerts are not verified by default
+        alert.setStatus(AlertStatus.PENDING); // Alerts are pending by default
         return alert;
     }
 
