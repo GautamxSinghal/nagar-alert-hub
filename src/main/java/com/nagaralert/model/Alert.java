@@ -3,48 +3,43 @@ package com.nagaralert.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * Represents an alert in the Nagar Alert Hub system.
  * Implements Serializable for object serialization.
  */
-@Entity
+@Document(collection = "alerts")
 public class Alert implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     private String alertId;
     
-    @Column(length = 2000)
     private String description;
     
     private String location;
     
-    @Enumerated(EnumType.STRING)
     private Severity severity;
     
     private String department;
     private LocalDateTime timestamp;
     
-    @Enumerated(EnumType.STRING)
     private AlertStatus status;
     
     private Double latitude;
     private Double longitude;
     private int upvotes;
     
-    @Column(name = "phone_number")
+    @Field("phone_number")
     private String phoneNumber;
 
-    @Column(name = "ai_reason", length = 500)
+    @Field("ai_reason")
     private String aiReason;
 
-    @Column(name = "image_url")
+    @Field("image_url")
     private String imageUrl;
 
     /**

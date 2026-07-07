@@ -26,9 +26,11 @@ import java.util.UUID;
 public class HomeController {
 
     private final AlertService alertService;
+    private final com.nagaralert.repository.AppUserRepository appUserRepository;
 
-    public HomeController(AlertService alertService) {
+    public HomeController(AlertService alertService, com.nagaralert.repository.AppUserRepository appUserRepository) {
         this.alertService = alertService;
+        this.appUserRepository = appUserRepository;
     }
 
     @GetMapping("/")
@@ -44,10 +46,27 @@ public class HomeController {
     }
 
     @PostMapping("/report")
-    public String reportAlert(@ModelAttribute Alert alert, @RequestParam(value = "image", required = false) MultipartFile image) {
+    public String reportAlert(@ModelAttribute Alert alert, @RequestParam(value = "image", required = false) MultipartFile image,
+                              @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.oauth2.core.user.OAuth2User oauth2User,
+                              org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken auth) {
         alert.setAlertId(UUID.randomUUID().toString());
         alert.setTimestamp(LocalDateTime.now());
         alert.setSeverity(SeverityDetector.determineSeverity(alert.getDescription()));
+
+        if (oauth2User != null && auth != null) {
+            String provider = auth.getAuthorizedClientRegistrationId().toUpperCase();
+            String oauthId = oauth2User.getName();
+            if (provider.equals("GOOGLE") && oauth2User.getAttribute("sub") != null) {
+                oauthId = oauth2User.getAttribute("sub");
+            } else if (oauth2User.getAttribute("id") != null) {
+                oauthId = oauth2User.getAttribute("id").toString();
+            }
+
+            java.util.Optional<com.nagaralert.model.AppUser> appUserOpt = appUserRepository.findByOauthIdAndOauthProvider(oauthId, provider);
+            if (appUserOpt.isPresent() && appUserOpt.get().getMobileNumber() != null && !appUserOpt.get().getMobileNumber().isBlank()) {
+                alert.setPhoneNumber(appUserOpt.get().getMobileNumber());
+            }
+        }
 
         if (image != null && !image.isEmpty()) {
             try {
@@ -76,11 +95,31 @@ public class HomeController {
     }
 
     @GetMapping("/my-alerts")
-    public String myAlerts(@RequestParam(required = false) String phone, Model model) {
-        if (phone != null && !phone.isBlank()) {
-            List<Alert> myAlerts = alertService.getAlertsByPhoneNumber(phone);
+    public String myAlerts(@RequestParam(required = false) String phone, Model model,
+                           @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.oauth2.core.user.OAuth2User oauth2User,
+                           org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken auth) {
+        
+        String targetPhone = phone;
+
+        if (oauth2User != null && auth != null && (targetPhone == null || targetPhone.isBlank())) {
+            String provider = auth.getAuthorizedClientRegistrationId().toUpperCase();
+            String oauthId = oauth2User.getName();
+            if (provider.equals("GOOGLE") && oauth2User.getAttribute("sub") != null) {
+                oauthId = oauth2User.getAttribute("sub");
+            } else if (oauth2User.getAttribute("id") != null) {
+                oauthId = oauth2User.getAttribute("id").toString();
+            }
+
+            java.util.Optional<com.nagaralert.model.AppUser> appUserOpt = appUserRepository.findByOauthIdAndOauthProvider(oauthId, provider);
+            if (appUserOpt.isPresent() && appUserOpt.get().getMobileNumber() != null && !appUserOpt.get().getMobileNumber().isBlank()) {
+                targetPhone = appUserOpt.get().getMobileNumber();
+            }
+        }
+
+        if (targetPhone != null && !targetPhone.isBlank()) {
+            List<Alert> myAlerts = alertService.getAlertsByPhoneNumber(targetPhone);
             model.addAttribute("alerts", myAlerts);
-            model.addAttribute("phone", phone);
+            model.addAttribute("phone", targetPhone);
         }
         return "my-alerts";
     }

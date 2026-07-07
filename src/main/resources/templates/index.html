@@ -126,12 +126,29 @@
                 </div>
                 <a href="/my-alerts"
                     class="px-4 py-2 text-sm font-semibold text-blue-400 hover:text-blue-300 transition hover:bg-blue-500/10 rounded-full"
-                    data-i18n="nav_track">Track
-                    My Alert</a>
-                <a href="/admin"
-                    class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition hover:bg-white/5 rounded-full"
-                    data-i18n="nav_admin">Admin
-                    Portal →</a>
+                    data-i18n="nav_track">Track My Alert</a>
+                
+                <div sec:authorize="hasRole('ADMIN')">
+                    <a href="/admin"
+                        class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition hover:bg-white/5 rounded-full"
+                        data-i18n="nav_admin">Admin Portal →</a>
+                </div>
+                
+                <div sec:authorize="isAuthenticated()" class="flex items-center space-x-2">
+                    <a href="/profile" sec:authorize="!hasRole('ADMIN')" class="w-10 h-10 rounded-full border-2 border-slate-700 overflow-hidden hover:border-blue-500 transition shadow-lg shadow-black/50 ml-4">
+                        <img th:if="${#authentication.principal.attributes.picture != null}" th:src="${#authentication.principal.attributes.picture}" alt="Profile" class="w-full h-full object-cover">
+                        <div th:unless="${#authentication.principal.attributes.picture != null}" class="w-full h-full bg-slate-800 flex items-center justify-center text-lg">👤</div>
+                    </a>
+                    
+                    <form sec:authorize="hasRole('ADMIN')" action="/logout" method="post" class="inline m-0 p-0 ml-4">
+                        <button type="submit" class="px-4 py-2 text-sm font-semibold text-red-400 hover:text-red-300 transition hover:bg-red-500/10 rounded-full">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="px-4 py-2 text-sm font-semibold text-green-400 hover:text-green-300 transition hover:bg-green-500/10 rounded-full">Login</a>
+                </div>
             </div>
         </div>
         <div class="bg-red-600/90 text-white text-center text-sm font-bold py-1 animate-pulse"
@@ -176,7 +193,7 @@
                     </div>
 
                     <!-- Phone Number Input -->
-                    <div>
+                    <div sec:authorize="!isAuthenticated()">
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"><span
                                 data-i18n="label_phone">Phone Number</span>
                             <span class="text-slate-600 lowercase font-normal" data-i18n="label_phone_opt">(Optional for
@@ -184,7 +201,7 @@
                         <input type="text" name="phoneNumber" placeholder="e.g. 9876543210"
                             class="w-full p-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-600">
                     </div>
-
+                    
                     <!-- Description Input -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"

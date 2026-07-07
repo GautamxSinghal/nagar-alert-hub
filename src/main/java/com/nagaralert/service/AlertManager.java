@@ -150,21 +150,18 @@ public class AlertManager implements AlertService {
      * Periodically cleans up alerts older than 24 hours.
      * Runs every 2 minutes.
      */
-    @Scheduled(fixedRate = 120000)
+    @Scheduled(fixedRate = 3600000) // Runs every 1 hour
     public void autoCleanup() {
         System.out.println("AutoCleanup: Starting cleanup process...");
         LocalDateTime cutoffTime = LocalDateTime.now().minusHours(24);
-        List<Alert> oldAlerts = alertRepository.findByTimestampBefore(cutoffTime);
         
-        List<Alert> toDelete = oldAlerts.stream()
-                .filter(alert -> alert.getStatus() != AlertStatus.RESOLVED)
-                .toList();
+        List<Alert> toDelete = alertRepository.findByStatusAndTimestampBefore(AlertStatus.RESOLVED, cutoffTime);
         
         if (!toDelete.isEmpty()) {
             alertRepository.deleteAll(toDelete);
-            System.out.println("AutoCleanup: Cleanup finished. Total removed: " + toDelete.size());
+            System.out.println("AutoCleanup: Cleanup finished. Total old resolved complaints removed: " + toDelete.size());
         } else {
-            System.out.println("AutoCleanup: No eligible alerts older than 24 hours found.");
+            System.out.println("AutoCleanup: No eligible resolved complaints older than 24 hours found.");
         }
     }
 }
