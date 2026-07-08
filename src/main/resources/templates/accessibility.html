@@ -71,17 +71,34 @@
         }
         
         /* Arcade Toggle Light Mode Masterpiece */
-        body.a11y-light-mode [id="langToggleBtn"] {
-            background-color: #64748b !important;
-            border-color: #475569 !important;
+        body.a11y-light-mode .arcade-toggle-track {
+            background-color: #e2e8f0 !important;
+            border-color: #cbd5e1 !important;
         }
-        body.a11y-light-mode [id="langToggleStick"] {
+        body.a11y-light-mode .arcade-toggle-stick {
             background-color: #94a3b8 !important;
         }
-        body.a11y-light-mode .bg-black\/30 {
-            background-color: #f8fafc !important; /* ultra light background for the pill container */
+        body.a11y-light-mode .arcade-toggle-container {
+            background-color: #ffffff !important; /* ultra light background for the pill container */
             border-color: #e2e8f0 !important; /* very subtle border */
             box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        /* Accessibility Top Bar Light Mode */
+        body.a11y-light-mode .a11y-top-bar {
+            background-color: #f1f5f9 !important; /* very light gray */
+            color: #334155 !important;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        body.a11y-light-mode .a11y-top-bar .text-white,
+        body.a11y-light-mode .a11y-top-bar button.text-white {
+            color: #334155 !important;
+        }
+        body.a11y-light-mode .a11y-top-bar .text-white\/60 {
+            color: #94a3b8 !important;
+        }
+        body.a11y-light-mode .a11y-top-bar .text-gray-300 {
+            color: #64748b !important;
         }
 
         /* Dyslexia Friendly */
@@ -125,7 +142,7 @@
 
 <body>
     <!-- 2. Accessibility Top Bar Fragment (Include at the top of <body>) -->
-    <div th:fragment="accessibility-top-bar" class="w-full bg-[#04112c] text-white text-[11px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center z-50 relative font-sans tracking-wide">
+    <div th:fragment="accessibility-top-bar" class="a11y-top-bar w-full bg-[#04112c] text-white text-[11px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center z-50 relative font-sans tracking-wide">
         <button onclick="document.getElementById('external-link-modal').style.display='flex'" class="flex items-center font-medium mb-1 sm:mb-0 hover:opacity-80 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400">
             <img src="https://flagcdn.com/w20/in.png" alt="India Flag" class="w-4 h-3 mr-2 inline-block rounded-sm">
             <span>Government of India</span>
@@ -311,6 +328,34 @@
                     Reset All Settings
                 </button>
             </div>
+        </div>
+    </div>
+    
+    <!-- 4. Arcade Language Toggle Fragment -->
+    <div th:fragment="arcade-language-toggle">
+        <div class="arcade-toggle-container flex items-center space-x-3 bg-black/30 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner">
+            <span id="labelEn"
+                class="text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500"
+                onclick="setLanguage('en')">EN</span>
+
+            <button id="langToggleBtn" onclick="toggleLanguage()"
+                class="arcade-toggle-track relative flex items-center w-12 h-5 rounded-full border-2 border-slate-600 focus:outline-none bg-black/50 mx-1">
+                <div id="langToggleKnob"
+                    class="absolute flex items-center justify-center transition-transform duration-300 ease-in-out"
+                    style="width: 18px; height: 18px; left: -2px;">
+                    <div id="langToggleStick"
+                        class="arcade-toggle-stick absolute w-4 h-1 bg-slate-400 transition-transform duration-300 origin-left"
+                        style="transform: rotate(-25deg); left: 50%;"></div>
+                    <div
+                        class="w-full h-full rounded-full bg-pink-500 z-10 relative shadow-[0_0_10px_rgba(236,72,153,0.8)] flex items-start justify-start p-1 cursor-pointer hover:bg-pink-400 transition-colors">
+                        <div class="w-1.5 h-1.5 bg-white/90 rounded-full"></div>
+                    </div>
+                </div>
+            </button>
+
+            <span id="labelHi"
+                class="text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200"
+                onclick="setLanguage('hi')">हिं</span>
         </div>
     </div>
 </body>

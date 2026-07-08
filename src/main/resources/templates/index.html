@@ -73,6 +73,89 @@
             font-weight: 700;
             font-family: 'Inter', sans-serif;
         }
+
+        /* Light mode overrides for GPS and Map buttons */
+        body.a11y-light-mode button[onclick="detectLocation()"] {
+            background: linear-gradient(to bottom right, #d1fae5, #ecfdf5) !important;
+            color: #065f46 !important;
+            border-color: #34d399 !important;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1) !important;
+        }
+
+        body.a11y-light-mode button[onclick="detectLocation()"]:hover {
+            background: linear-gradient(to bottom right, #a7f3d0, #d1fae5) !important;
+        }
+
+        body.a11y-light-mode button[onclick="detectLocation()"] svg {
+            filter: drop-shadow(0 0 2px rgba(6, 95, 70, 0.2)) !important;
+        }
+
+        body.a11y-light-mode button[onclick="openMap()"] {
+            background: linear-gradient(to bottom right, #dbeafe, #eff6ff) !important;
+            color: #1e3a8a !important;
+            border-color: #93c5fd !important;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1) !important;
+        }
+
+        body.a11y-light-mode button[onclick="openMap()"]:hover {
+            background: linear-gradient(to bottom right, #bfdbfe, #dbeafe) !important;
+        }
+
+        body.a11y-light-mode button[onclick="openMap()"] svg {
+            filter: drop-shadow(0 0 2px rgba(30, 58, 138, 0.2)) !important;
+        }
+
+        /* Light mode overrides for QR Panel */
+        body.a11y-light-mode #qrPanel>div {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        }
+
+        body.a11y-light-mode #qrHandle {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        body.a11y-light-mode #qrHandle:hover {
+            background-color: #f1f5f9 !important;
+        }
+
+        body.a11y-light-mode #qrHandle svg {
+            color: #2563eb !important;
+        }
+
+        body.a11y-light-mode #qrContent .text-white {
+            color: #0f172a !important;
+        }
+
+        body.a11y-light-mode #qrContent .text-slate-400 {
+            color: #475569 !important;
+        }
+
+        body.a11y-light-mode #qrContent .bg-emerald-900\/30 {
+            background-color: #ecfdf5 !important;
+        }
+
+        body.a11y-light-mode #qrContent .border-emerald-500\/30 {
+            border-color: #a7f3d0 !important;
+        }
+
+        body.a11y-light-mode #qrContent .text-emerald-400 {
+            color: #047857 !important;
+        }
+
+        body.a11y-light-mode #qrContent .bg-emerald-400 {
+            background-color: #10b981 !important;
+        }
+
+        body.a11y-light-mode #qrContent a.border-slate-700 {
+            border-color: #e2e8f0 !important;
+        }
+
+        body.a11y-light-mode #qrContent .hover\:bg-slate-800\/50:hover {
+            background-color: #e2e8f0 !important;
+        }
     </style>
     <th:block th:replace="~{accessibility :: accessibility-styles}"></th:block>
 </head>
@@ -92,74 +175,56 @@
         <!-- Navbar -->
         <nav class="glass border-b border-slate-800 w-full">
             <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div
-                    class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-xl shadow-lg shadow-blue-900/50">
-                    📢
+                <div class="flex items-center space-x-3">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-xl shadow-lg shadow-blue-900/50">
+                        📢
+                    </div>
+                    <h1
+                        class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 tracking-tight">
+                        Nagar Alert Hub</h1>
                 </div>
-                <h1
-                    class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 tracking-tight">
-                    Nagar Alert Hub</h1>
-            </div>
-            <div class="flex items-center space-x-4">
-                <!-- NORSK/ENGLISH Arcade Style Toggle -->
-                <div
-                    class="flex items-center space-x-3 bg-black/30 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner mr-2">
-                    <span id="labelEn"
-                        class="text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500"
-                        onclick="setLanguage('en')">EN</span>
+                <div class="flex items-center space-x-4">
+                    <th:block th:replace="~{accessibility :: arcade-language-toggle}"></th:block>
+                    <a href="/my-alerts"
+                        class="px-4 py-2 text-sm font-semibold text-blue-400 hover:text-blue-300 transition hover:bg-blue-500/10 rounded-full"
+                        data-i18n="nav_track">Track My Alert</a>
 
-                    <button id="langToggleBtn" onclick="toggleLanguage()"
-                        class="relative flex items-center w-12 h-5 rounded-full border-2 border-slate-600 focus:outline-none bg-black/50 mx-1">
-                        <div id="langToggleKnob"
-                            class="absolute flex items-center justify-center transition-transform duration-300 ease-in-out"
-                            style="width: 18px; height: 18px; left: -2px;">
-                            <div id="langToggleStick"
-                                class="absolute w-4 h-1 bg-slate-400 transition-transform duration-300 origin-left"
-                                style="transform: rotate(-25deg); left: 50%;"></div>
-                            <div
-                                class="w-full h-full rounded-full bg-pink-500 z-10 relative shadow-[0_0_10px_rgba(236,72,153,0.8)] flex items-start justify-start p-1 cursor-pointer hover:bg-pink-400 transition-colors">
-                                <div class="w-1.5 h-1.5 bg-white/90 rounded-full"></div>
-                            </div>
-                        </div>
-                    </button>
+                    <div sec:authorize="hasRole('ADMIN')">
+                        <a href="/admin"
+                            class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition hover:bg-white/5 rounded-full"
+                            data-i18n="nav_admin">Admin Portal →</a>
+                    </div>
 
-                    <span id="labelHi"
-                        class="text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200"
-                        onclick="setLanguage('hi')">हिं</span>
-                </div>
-                <a href="/my-alerts"
-                    class="px-4 py-2 text-sm font-semibold text-blue-400 hover:text-blue-300 transition hover:bg-blue-500/10 rounded-full"
-                    data-i18n="nav_track">Track My Alert</a>
-                
-                <div sec:authorize="hasRole('ADMIN')">
-                    <a href="/admin"
-                        class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition hover:bg-white/5 rounded-full"
-                        data-i18n="nav_admin">Admin Portal →</a>
-                </div>
-                
-                <div sec:authorize="isAuthenticated()" class="flex items-center space-x-2">
-                    <a href="/profile" sec:authorize="!hasRole('ADMIN')" class="w-10 h-10 rounded-full border-2 border-slate-700 overflow-hidden hover:border-blue-500 transition shadow-lg shadow-black/50 ml-4">
-                        <img th:if="${#authentication.principal.attributes.picture != null}" th:src="${#authentication.principal.attributes.picture}" alt="Profile" class="w-full h-full object-cover">
-                        <div th:unless="${#authentication.principal.attributes.picture != null}" class="w-full h-full bg-slate-800 flex items-center justify-center text-lg">👤</div>
-                    </a>
-                    
-                    <form sec:authorize="hasRole('ADMIN')" action="/logout" method="post" class="inline m-0 p-0 ml-4">
-                        <button type="submit" class="px-4 py-2 text-sm font-semibold text-red-400 hover:text-red-300 transition hover:bg-red-500/10 rounded-full">
-                            Logout
-                        </button>
-                    </form>
-                </div>
-                <div sec:authorize="!isAuthenticated()">
-                    <a href="/login" class="px-4 py-2 text-sm font-semibold text-green-400 hover:text-green-300 transition hover:bg-green-500/10 rounded-full">Login</a>
+                    <div sec:authorize="isAuthenticated()" class="flex items-center space-x-2">
+                        <a href="/profile" sec:authorize="!hasRole('ADMIN')"
+                            class="w-10 h-10 rounded-full border-2 border-slate-700 overflow-hidden hover:border-blue-500 transition shadow-lg shadow-black/50 ml-4">
+                            <img th:if="${#authentication.principal.attributes.picture != null}"
+                                th:src="${#authentication.principal.attributes.picture}" alt="Profile"
+                                class="w-full h-full object-cover">
+                            <div th:unless="${#authentication.principal.attributes.picture != null}"
+                                class="w-full h-full bg-slate-800 flex items-center justify-center text-lg">👤</div>
+                        </a>
+
+                        <form sec:authorize="hasRole('ADMIN')" action="/logout" method="post"
+                            class="inline m-0 p-0 ml-4">
+                            <button type="submit"
+                                class="px-4 py-2 text-sm font-semibold text-red-400 hover:text-red-300 transition hover:bg-red-500/10 rounded-full">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                    <div sec:authorize="!isAuthenticated()">
+                        <a href="/login"
+                            class="px-4 py-2 text-sm font-semibold text-green-400 hover:text-green-300 transition hover:bg-green-500/10 rounded-full">Login</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="bg-red-600/90 text-white text-center text-sm font-bold py-1 animate-pulse"
-            th:if="${criticalCount > 0}" data-i18n="critical_banner">
-            ⚠️ CRITICAL ALERTS ACTIVE IN YOUR AREA
-        </div>
-    </nav>
+            <div class="bg-red-600/90 text-white text-center text-sm font-bold py-1 animate-pulse"
+                th:if="${criticalCount > 0}" data-i18n="critical_banner">
+                ⚠️ CRITICAL ALERTS ACTIVE IN YOUR AREA
+            </div>
+        </nav>
     </header>
 
     <div id="main-content" class="container mx-auto mt-10 p-6 grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -184,14 +249,32 @@
                                 placeholder="Enter landmark or street..." data-i18n-placeholder="ph_location" required
                                 class="w-full p-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-600">
 
-                            <div class="flex space-x-2">
+                            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 mt-3">
                                 <button type="button" onclick="detectLocation()"
-                                    class="flex-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-600/50 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-center group">
-                                    <span class="mr-2 group-hover:scale-110 transition">🎯</span> GPS
+                                    class="flex-1 relative overflow-hidden bg-gradient-to-br from-emerald-900/40 to-emerald-800/10 hover:from-emerald-800/50 hover:to-emerald-700/30 text-emerald-400 border border-emerald-500/30 hover:border-emerald-400/60 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center group active:scale-[0.98]">
+                                    <div
+                                        class="absolute inset-0 bg-emerald-400/20 opacity-0 group-hover:opacity-100 transition-opacity blur-xl">
+                                    </div>
+                                    <svg class="w-4 h-4 mr-2 group-hover:scale-110 group-hover:rotate-90 transition-all duration-500 relative z-10 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                            d="M12 4v1m6 7h1M11 19v1M6 12H5m14 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+                                    </svg>
+                                    <span class="relative z-10 tracking-wide">GPS</span>
                                 </button>
                                 <button type="button" onclick="openMap()"
-                                    class="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-600/50 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-center group">
-                                    <span class="mr-2 group-hover:scale-110 transition">🗺️</span> Map
+                                    class="flex-1 relative overflow-hidden bg-gradient-to-br from-blue-900/40 to-blue-800/10 hover:from-blue-800/50 hover:to-blue-700/30 text-blue-400 border border-blue-500/30 hover:border-blue-400/60 shadow-[0_0_15px_rgba(59,130,246,0.05)] hover:shadow-[0_0_20px_rgba(59,130,246,0.2)] py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center group active:scale-[0.98]">
+                                    <div
+                                        class="absolute inset-0 bg-blue-400/20 opacity-0 group-hover:opacity-100 transition-opacity blur-xl">
+                                    </div>
+                                    <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300 relative z-10 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7">
+                                        </path>
+                                    </svg>
+                                    <span class="relative z-10 tracking-wide">Map</span>
                                 </button>
                             </div>
                         </div>
@@ -206,7 +289,7 @@
                         <input type="text" name="phoneNumber" placeholder="e.g. 9876543210"
                             class="w-full p-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-600">
                     </div>
-                    
+
                     <!-- Description Input -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
@@ -361,14 +444,33 @@
             </div>
             <div class="relative flex-1">
                 <div id="map" class="absolute inset-0 z-10"></div>
-                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 w-[90%] max-w-md">
-                    <div class="flex shadow-2xl relative group">
+                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 w-[95%] max-w-lg">
+                    <div
+                        class="flex shadow-2xl relative group bg-white/95 rounded-xl overflow-hidden backdrop-blur border border-slate-200/50">
+                        <!-- Integrated GPS Button -->
+                        <button onclick="snapToGps()" title="Use My Current Location"
+                            class="bg-slate-50 hover:bg-blue-50 text-blue-600 px-3 flex flex-col items-center justify-center transition-colors border-r border-slate-200/60 group-focus-within:bg-blue-50 min-w-[60px]">
+                            <svg class="w-4 h-4 mb-0.5 transform active:scale-90 transition-transform hover:scale-110"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 2v2m0 16v2m10-10h-2M4 12H2m15 0a5 5 0 11-10 0 5 5 0 0110 0z"></path>
+                            </svg>
+                            <span
+                                class="text-[9px] font-extrabold uppercase tracking-widest text-blue-700 leading-none">GPS</span>
+                        </button>
+
+                        <!-- Search Input -->
                         <input type="text" id="mapSearch" placeholder="Search area (e.g. Gandhi Maidan)..."
                             data-i18n-placeholder="ph_map_search"
-                            class="w-full p-3 pl-4 rounded-l-xl bg-white/95 text-slate-900 focus:outline-none border-0 shadow-lg text-sm font-medium backdrop-blur"
+                            class="w-full p-3 bg-transparent text-slate-900 focus:outline-none border-0 text-sm font-medium placeholder-slate-400"
                             autocomplete="off">
+
+                        <!-- Search Button -->
                         <button onclick="searchLocation()"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded-r-xl font-bold text-sm shadow-lg transition">Search</button>
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 font-bold text-sm transition-colors active:bg-blue-800">
+                            Search
+                        </button>
+
                         <ul id="searchSuggestions"
                             class="absolute top-full left-0 right-0 bg-white text-slate-900 rounded-xl shadow-2xl hidden max-h-60 overflow-y-auto z-30 divide-y divide-slate-100 mt-2 border border-slate-100">
                         </ul>
@@ -518,13 +620,49 @@
             }, { enableHighAccuracy: true });
         }
 
+        function snapToGps(isAuto = false) {
+            if (navigator.geolocation) {
+                if (!isAuto) document.getElementById('selectedAddress').innerText = "Locating your position...";
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        if (isAuto) {
+                            map.setView([lat, lng], 15); // Instant transition on first load
+                        } else {
+                            map.flyTo([lat, lng], 15, { duration: 1.5 }); // Smooth fly animation on manual button click
+                        }
+                        placeMarker(lat, lng);
+                    },
+                    (err) => {
+                        console.warn("GPS fetch failed:", err);
+                        if (!selectedLat) {
+                            document.getElementById('selectedAddress').innerText = "Click on map to select location";
+                        }
+                    },
+                    { enableHighAccuracy: true, timeout: 5000 }
+                );
+            }
+        }
+
         function openMap() {
             document.getElementById('mapModal').classList.remove('hidden');
             if (!map) {
                 map = L.map('map').setView([25.5941, 85.1376], 13);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
                 map.on('click', e => placeMarker(e.latlng.lat, e.latlng.lng));
-            } else { setTimeout(() => map.invalidateSize(), 100); }
+
+                // Only auto-fetch GPS on very first initialization if no location is selected
+                if (!selectedLat) {
+                    snapToGps(true);
+                }
+            } else {
+                setTimeout(() => map.invalidateSize(), 100);
+                // If returning to map and a location is already selected, focus on it
+                if (selectedLat && selectedLng) {
+                    map.setView([selectedLat, selectedLng], 15);
+                }
+            }
         }
 
         function closeMap() { document.getElementById('mapModal').classList.add('hidden'); }
@@ -699,6 +837,85 @@
         }
         document.addEventListener('DOMContentLoaded', () => applyTranslations(currentLang));
     </script>
+
+    <!-- Twilio QR Side Handle (Chrome Style) - Collapsed by Default -->
+    <div id="qrPanel"
+        class="fixed right-0 top-24 z-40 flex items-center transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] transform translate-x-full hidden md:flex">
+
+        <div
+            class="bg-slate-900 border-y border-l border-slate-700 rounded-l-[1.5rem] shadow-2xl flex items-center p-6 relative w-[18rem] min-h-[14rem] cursor-default">
+
+            <!-- Handle View (Visible only when collapsed) -->
+            <div id="qrHandle" onclick="toggleQRPanel()"
+                class="absolute -left-16 top-5 w-16 h-16 bg-slate-800 border border-r-0 border-slate-600 shadow-lg flex items-center justify-center transition-colors duration-300 cursor-pointer hover:bg-slate-700 rounded-l-full opacity-100 group">
+                <div class="flex items-center space-x-1 pl-1 text-blue-400 group-hover:text-blue-300 transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z" />
+                    </svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Expanded Content -->
+            <div id="qrContent"
+                class="transition-opacity duration-300 w-full pl-6 flex items-center opacity-0 pointer-events-none">
+                <a href="https://wa.me/14155238886?text=join%20railroad-classroom" target="_blank"
+                    class="shrink-0 block p-1.5 bg-white rounded-xl shadow-sm border border-slate-700 hover:border-blue-500 hover:shadow-md transition">
+                    <img src="/images/twilio_qr.png" alt="Twilio WhatsApp QR Code" class="w-[84px] h-[84px] rounded-lg">
+                </a>
+                <div class="ml-4 flex-1">
+                    <div
+                        class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-900/30 border border-emerald-500/30 mb-1.5">
+                        <span class="mr-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Sandbox
+                    </div>
+                    <div>
+                        <p class="text-[13px] text-white font-medium tracking-tight">Activate WhatsApp <br>Sandbox</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Scan for alerts</p>
+                    </div>
+                </div>
+
+                <!-- Right Chevron (Visible on Expanded) -->
+                <div onclick="toggleQRPanel()"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer hover:bg-slate-800/50 p-2 rounded-full transition-colors">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleQRPanel() {
+            const panel = document.getElementById('qrPanel');
+            const handle = document.getElementById('qrHandle');
+            const content = document.getElementById('qrContent');
+
+            if (panel.classList.contains('translate-x-full')) {
+                // Expand
+                panel.classList.remove('translate-x-full');
+                panel.classList.add('translate-x-0');
+                handle.classList.remove('opacity-100');
+                handle.classList.add('opacity-0', 'pointer-events-none');
+                content.classList.remove('opacity-0', 'pointer-events-none');
+                content.classList.add('opacity-100', 'delay-100');
+            } else {
+                // Collapse
+                panel.classList.remove('translate-x-0');
+                panel.classList.add('translate-x-full');
+                content.classList.remove('opacity-100', 'delay-100');
+                content.classList.add('opacity-0', 'pointer-events-none');
+                handle.classList.remove('opacity-0', 'pointer-events-none');
+                handle.classList.add('opacity-100');
+            }
+        }
+    </script>
+
     <th:block th:replace="~{accessibility :: accessibility-widget}"></th:block>
 </body>
 

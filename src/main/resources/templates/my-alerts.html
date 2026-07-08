@@ -5,7 +5,8 @@
     <title>Track My Alert - Nagar Alert Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -16,79 +17,80 @@
         }
     </script>
     <style>
-        body { font-family: 'Inter', system-ui, sans-serif; }
-        .bg-pattern {
-            background-color: #f8fafc;
-            background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
-            background-size: 24px 24px;
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
         }
-        .card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
         }
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
     <th:block th:replace="~{accessibility :: accessibility-styles}"></th:block>
 </head>
 
-<body class="bg-pattern text-gray-800 min-h-screen relative flex flex-col">
+<body class="bg-slate-950 text-white min-h-screen relative flex flex-col">
 
     <header class="sticky top-0 z-50 w-full flex flex-col">
         <th:block th:replace="~{accessibility :: accessibility-top-bar}"></th:block>
 
         <!-- Navbar -->
-        <nav class="bg-white border-b border-gray-200 shadow-sm w-full">
-        <div class="w-full px-3 sm:px-6 py-2.5 md:py-4 flex flex-wrap justify-between items-center gap-y-2">
-            <div class="flex items-center space-x-2 md:space-x-3">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
-                    <span class="text-white text-base sm:text-xl">📢</span>
+        <nav class="glass border-b border-slate-800 w-full">
+            <div class="w-full px-3 sm:px-6 py-2.5 md:py-4 flex flex-wrap justify-between items-center gap-y-2">
+                <div class="flex items-center space-x-2 md:space-x-3">
+                    <div
+                        class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                        <span class="text-white text-base sm:text-xl">📢</span>
+                    </div>
+                    <h1
+                        class="text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 tracking-tight hidden sm:block">
+                        <a href="/">Nagar Alert Hub</a>
+                    </h1>
                 </div>
-                <h1 class="text-lg sm:text-2xl font-bold text-gray-900 tracking-tight hidden sm:block">
-                    <a href="/">Nagar Alert Hub</a>
-                </h1>
-            </div>
-            
-            <div class="flex items-center space-x-2 sm:space-x-4">
-                <!-- Language Toggle -->
-                <div class="flex items-center space-x-1 sm:space-x-2 bg-gray-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-gray-200">
-                    <span id="labelEn" class="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] cursor-pointer text-blue-600 transition" onclick="setLanguage('en')">EN</span>
-                    <button id="langToggleBtn" onclick="toggleLanguage()" class="relative flex items-center w-8 sm:w-11 h-[14px] sm:h-5 rounded-full border border-gray-300 focus:outline-none bg-white">
-                        <div id="langToggleKnob" class="absolute transition-transform duration-300 ease-in-out" style="width: 10px; height: 10px; sm:width: 14px; sm:height: 14px; left: 1px;">
-                            <div id="langToggleStick" class="absolute w-2.5 sm:w-3.5 h-0.5 bg-gray-400 transition-transform duration-300 origin-left rounded" style="transform: rotate(-25deg); left: 50%; top: 4px; sm:top: 6px;"></div>
-                            <div class="w-full h-full rounded-full bg-blue-600 z-10 relative shadow-sm cursor-pointer"></div>
-                        </div>
-                    </button>
-                    <span id="labelHi" class="text-[10px] sm:text-xs font-bold tracking-wide cursor-pointer text-gray-400 hover:text-gray-600 transition" onclick="setLanguage('hi')">हिं</span>
+
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Language Toggle -->
+                    <th:block th:replace="~{accessibility :: arcade-language-toggle}"></th:block>
+
+                    <a href="/"
+                        class="px-2 sm:px-4 py-1 sm:py-2 text-[11px] sm:text-sm font-semibold text-slate-400 hover:text-white border border-transparent hover:border-slate-700 hover:bg-slate-800 transition rounded-full"
+                        data-i18n="nav_back">← Back</a>
                 </div>
-                
-                <a href="/" class="px-2 sm:px-4 py-1 sm:py-2 text-[11px] sm:text-sm font-semibold text-gray-600 hover:text-blue-600 border border-transparent hover:border-gray-200 hover:bg-gray-50 transition rounded-full" data-i18n="nav_back">← Back</a>
             </div>
-        </div>
-    </nav>
+        </nav>
     </header>
 
     <div class="w-full px-2 sm:container sm:mx-auto mt-4 sm:mt-10 sm:px-6 max-w-4xl flex-grow">
-        
+
         <!-- Header -->
         <div class="text-center mb-6 sm:mb-10 px-2 sm:px-0">
-            <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 mb-1.5 sm:mb-2" data-i18n="track_title">Track Your Alert</h2>
-            <p class="text-gray-500 text-xs sm:text-sm md:text-base max-w-lg mx-auto" data-i18n="track_desc">Enter the phone number you used to report an incident to check its current status.</p>
+            <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-1.5 sm:mb-2"
+                data-i18n="track_title">Track Your Alert</h2>
+            <p class="text-slate-400 text-xs sm:text-sm md:text-base max-w-lg mx-auto" data-i18n="track_desc">Enter the
+                phone number you used to report an incident to check its current status.</p>
         </div>
 
         <!-- Search Form -->
-        <div class="card p-4 sm:p-5 md:p-8 max-w-xl mx-auto mb-6 sm:mb-8 md:mb-12 border border-gray-200">
+        <div
+            class="p-4 sm:p-5 md:p-8 max-w-xl mx-auto mb-6 sm:mb-8 md:mb-12 rounded-[1.5rem] bg-slate-900/50 border border-slate-700 shadow-xl backdrop-blur-sm">
             <form action="/my-alerts" method="get" class="flex flex-col sm:flex-row gap-2.5 sm:gap-3 md:gap-4">
                 <input type="text" name="phone" th:value="${phone}" placeholder="Enter phone number (e.g. 9876543210)"
                     data-i18n-placeholder="ph_phone" required
-                    class="flex-1 p-3 sm:p-3.5 md:p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 focus:outline-none text-gray-900 transition placeholder-gray-400 text-sm sm:text-base md:text-lg w-full">
+                    class="flex-1 p-3 sm:p-3.5 md:p-4 rounded-xl bg-slate-950 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-white transition placeholder-slate-500 text-sm sm:text-base md:text-lg w-full">
                 <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 sm:px-6 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl shadow-sm transition active:scale-[0.98] text-sm sm:text-base md:text-lg w-full sm:w-auto">
+                    class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold px-4 sm:px-6 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl shadow-lg shadow-blue-900/20 transition active:scale-95 text-sm sm:text-base md:text-lg w-full sm:w-auto">
                     <span data-i18n="btn_track">Track</span>
                 </button>
             </form>
@@ -98,75 +100,101 @@
         <div th:if="${phone != null}" class="pb-12">
 
             <!-- Empty State -->
-            <div th:if="${alerts == null || alerts.empty}" class="card p-10 md:p-12 text-center border-dashed border-2 border-gray-300 max-w-2xl mx-auto bg-gray-50">
+            <div th:if="${alerts == null || alerts.empty}"
+                class="rounded-[1.5rem] p-10 md:p-12 text-center border-dashed border-2 border-slate-700 max-w-2xl mx-auto bg-slate-900/30 backdrop-blur-sm">
                 <div class="text-4xl md:text-5xl mb-4 opacity-40">🔍</div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-900" data-i18n="no_alerts_title">No alerts found</h3>
-                <p class="text-gray-500 mt-2 text-sm md:text-base" data-i18n="no_alerts_desc">We couldn't find any active alerts associated with <span class="font-bold text-gray-700" th:text="${phone}"></span>.</p>
+                <h3 class="text-lg md:text-xl font-bold text-white" data-i18n="no_alerts_title">No alerts found</h3>
+                <p class="text-slate-400 mt-2 text-sm md:text-base" data-i18n="no_alerts_desc">We couldn't find any
+                    active alerts associated with <span class="font-bold text-slate-200" th:text="${phone}"></span>.</p>
             </div>
 
             <!-- List State -->
             <div th:if="${alerts != null && !alerts.empty}" class="space-y-6 max-w-3xl mx-auto">
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <span class="mr-2">📋</span> Found <span th:text="${alerts.size()}" class="mx-1.5 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100"></span> alert(s)
+                <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
+                    <span class="mr-2">📋</span> Found <span th:text="${alerts.size()}"
+                        class="mx-1.5 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100"></span>
+                    alert(s)
                 </h3>
 
-                <div th:each="alert, iterStat : ${alerts}" th:style="'animation-delay: ' + ${iterStat.index * 100} + 'ms'"
-                    class="fade-in card overflow-hidden flex flex-col md:flex-row transition-all duration-300 hover:border-gray-300 hover:shadow-md group">
-                    
+                <div th:each="alert, iterStat : ${alerts}"
+                    th:style="'animation-delay: ' + ${iterStat.index * 100} + 'ms'"
+                    class="fade-in rounded-[1.5rem] bg-slate-900/50 border border-slate-700 overflow-hidden flex flex-col md:flex-row transition-all duration-300 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 group backdrop-blur-sm">
+
                     <!-- Content Side -->
                     <div class="flex-1 p-5 md:p-6">
                         <div class="flex justify-between items-start mb-3">
-                            <p class="text-gray-400 text-[11px] md:text-xs font-semibold tracking-wide uppercase bg-gray-50 px-2 py-1 rounded border border-gray-100" th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy, hh:mm a')}">Time</p>
-                            
+                            <p class="text-slate-400 text-[11px] md:text-xs font-semibold tracking-wide uppercase bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700"
+                                th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy, hh:mm a')}">Time</p>
+
                             <!-- Mobile Status Badge (shows only on small screens) -->
                             <div class="block md:hidden">
-                                <span th:if="${alert.status?.name() == 'PENDING'}" class="bg-amber-50 text-amber-600 border border-amber-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide flex items-center"><span class="mr-1">⏳</span> <span data-i18n="status_pending">Pending</span></span>
-                                <span th:if="${alert.status?.name() == 'IN_PROGRESS'}" class="bg-blue-50 text-blue-600 border border-blue-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide flex items-center"><span class="mr-1">👷</span> <span data-i18n="status_progress">In Progress</span></span>
-                                <span th:if="${alert.status?.name() == 'RESOLVED'}" class="bg-green-50 text-green-600 border border-green-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide flex items-center"><span class="mr-1">✅</span> <span data-i18n="status_resolved">Resolved</span></span>
+                                <span th:if="${alert.status?.name() == 'PENDING'}"
+                                    class="bg-amber-900/30 text-amber-400 border border-amber-500/30 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide flex items-center"><span
+                                        class="mr-1">⏳</span> <span data-i18n="status_pending">Pending</span></span>
+                                <span th:if="${alert.status?.name() == 'IN_PROGRESS'}"
+                                    class="bg-blue-900/30 text-blue-400 border border-blue-500/30 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide flex items-center"><span
+                                        class="mr-1">👷</span> <span data-i18n="status_progress">In
+                                        Progress</span></span>
+                                <span th:if="${alert.status?.name() == 'RESOLVED'}"
+                                    class="bg-green-900/30 text-green-400 border border-green-500/30 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide flex items-center"><span
+                                        class="mr-1">✅</span> <span data-i18n="status_resolved">Resolved</span></span>
                             </div>
                         </div>
 
-                        <h4 class="text-lg md:text-xl font-bold text-gray-900 mb-2 leading-snug group-hover:text-blue-700 transition-colors" th:text="${alert.description}">Description</h4>
-                        
-                        <div class="text-gray-500 text-sm flex items-start mt-3">
+                        <h4 class="text-lg md:text-xl font-bold text-white mb-2 leading-snug group-hover:text-blue-400 transition-colors"
+                            th:text="${alert.description}">Description</h4>
+
+                        <div class="text-slate-400 text-sm flex items-start mt-3">
                             <span class="mr-1.5 opacity-60 mt-0.5">📍</span>
                             <span th:text="${alert.location}" class="leading-relaxed">Location</span>
                         </div>
 
                         <!-- Info Pills -->
                         <div class="mt-4 flex flex-wrap gap-2 md:gap-3">
-                            <div class="bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 flex items-center text-[11px] md:text-xs">
-                                <span class="text-gray-400 mr-1.5 font-medium" data-i18n="lbl_dept">Dept:</span>
-                                <span class="font-bold text-gray-700" th:text="${alert.department}">DEPT</span>
+                            <div
+                                class="bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700 flex items-center text-[11px] md:text-xs">
+                                <span class="text-slate-400 mr-1.5 font-medium" data-i18n="lbl_dept">Dept:</span>
+                                <span class="font-bold text-slate-200" th:text="${alert.department}">DEPT</span>
                             </div>
-                            <div class="bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 flex items-center text-[11px] md:text-xs">
-                                <span class="text-gray-400 mr-1.5 font-medium" data-i18n="lbl_severity">Severity:</span>
+                            <div
+                                class="bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700 flex items-center text-[11px] md:text-xs">
+                                <span class="text-slate-400 mr-1.5 font-medium"
+                                    data-i18n="lbl_severity">Severity:</span>
                                 <span class="font-bold"
-                                    th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'text-red-600' : 
-                                                    (${alert.severity?.name() == 'HIGH'} ? 'text-orange-600' : 
-                                                    (${alert.severity?.name() == 'MEDIUM'} ? 'text-amber-600' : 'text-blue-600'))"
+                                    th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'text-red-400' : 
+                                                    (${alert.severity?.name() == 'HIGH'} ? 'text-orange-400' : 
+                                                    (${alert.severity?.name() == 'MEDIUM'} ? 'text-amber-400' : 'text-blue-400'))"
                                     th:text="${alert.severity}">SEV</span>
                             </div>
-                            <div class="bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 flex items-center text-[11px] md:text-xs">
-                                <span class="text-gray-400 mr-1.5 font-medium" data-i18n="lbl_support">Support:</span>
-                                <span class="font-bold text-gray-700">👍 <span th:text="${alert.upvotes}">0</span></span>
+                            <div
+                                class="bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700 flex items-center text-[11px] md:text-xs">
+                                <span class="text-slate-400 mr-1.5 font-medium" data-i18n="lbl_support">Support:</span>
+                                <span class="font-bold text-slate-200">👍 <span
+                                        th:text="${alert.upvotes}">0</span></span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Desktop Status Side (Hidden on Mobile) -->
-                    <div class="hidden md:flex shrink-0 w-36 lg:w-40 bg-gray-50 border-l border-gray-100 items-center justify-center p-4">
-                        <div th:if="${alert.status?.name() == 'PENDING'}" class="flex flex-col items-center text-amber-600">
+                    <div
+                        class="hidden md:flex shrink-0 w-36 lg:w-40 bg-slate-900/80 border-l border-slate-700 items-center justify-center p-4">
+                        <div th:if="${alert.status?.name() == 'PENDING'}"
+                            class="flex flex-col items-center text-amber-500">
                             <span class="text-3xl mb-2">⏳</span>
-                            <span class="text-[11px] font-bold tracking-widest uppercase" data-i18n="status_pending">Pending</span>
+                            <span class="text-[11px] font-bold tracking-widest uppercase"
+                                data-i18n="status_pending">Pending</span>
                         </div>
-                        <div th:if="${alert.status?.name() == 'IN_PROGRESS'}" class="flex flex-col items-center text-blue-600">
+                        <div th:if="${alert.status?.name() == 'IN_PROGRESS'}"
+                            class="flex flex-col items-center text-blue-500">
                             <span class="text-3xl mb-2">👷</span>
-                            <span class="text-[11px] font-bold tracking-widest uppercase text-center" data-i18n="status_progress">In Progress</span>
+                            <span class="text-[11px] font-bold tracking-widest uppercase text-center"
+                                data-i18n="status_progress">In Progress</span>
                         </div>
-                        <div th:if="${alert.status?.name() == 'RESOLVED'}" class="flex flex-col items-center text-green-600">
+                        <div th:if="${alert.status?.name() == 'RESOLVED'}"
+                            class="flex flex-col items-center text-green-500">
                             <span class="text-3xl mb-2">✅</span>
-                            <span class="text-[11px] font-bold tracking-widest uppercase" data-i18n="status_resolved">Resolved</span>
+                            <span class="text-[11px] font-bold tracking-widest uppercase"
+                                data-i18n="status_resolved">Resolved</span>
                         </div>
                     </div>
 
@@ -176,7 +204,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="mt-auto py-6 border-t border-gray-200 text-center text-gray-500 text-xs font-medium bg-white">
+    <footer class="mt-auto py-6 border-t border-slate-800 text-center text-slate-500 text-xs font-medium glass">
         <p data-i18n="footer">&copy; 2026 Nagar Alert Hub. Protecting the City.</p>
     </footer>
 
@@ -267,4 +295,5 @@
     </script>
     <th:block th:replace="~{accessibility :: accessibility-widget}"></th:block>
 </body>
+
 </html>
