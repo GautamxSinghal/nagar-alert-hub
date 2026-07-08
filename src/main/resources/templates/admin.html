@@ -3,195 +3,294 @@
 
 <head>
     <title>Admin Portal - Nagar Alert Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Subtle page pattern */
+        .bg-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+    </style>
+    <th:block th:replace="~{accessibility :: accessibility-styles}"></th:block>
 </head>
 
-<body class="bg-slate-900 text-slate-200 font-sans">
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col relative">
 
-    <nav class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-lg border-b border-slate-700">
-        <div class="flex items-center space-x-4">
-            <h1 class="text-xl font-bold">Nagar Alert Hub <span class="text-blue-400">| ADMIN</span></h1>
-            <div class="bg-blue-600 px-4 py-1 rounded text-sm font-bold shadow-lg">
-                <span th:text="${deptName}">DEPT</span> PANEL
-            </div>
-        </div>
-        <div class="flex items-center space-x-4">
-        <!-- NORSK/ENGLISH Arcade Style Toggle -->
-        <div
-            class="flex items-center space-x-3 bg-black/30 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner mr-2">
-            <span id="labelEn"
-                class="text-xs font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500"
-                onclick="setLanguage('en')">EN</span>
+    <header class="sticky top-0 z-50 w-full flex flex-col">
+        <th:block th:replace="~{accessibility :: accessibility-top-bar}"></th:block>
 
-            <button id="langToggleBtn" onclick="toggleLanguage()"
-                class="relative flex items-center w-12 h-5 rounded-full border-2 border-slate-600 focus:outline-none bg-black/50 mx-1">
-                <div id="langToggleKnob"
-                    class="absolute flex items-center justify-center transition-transform duration-300 ease-in-out"
-                    style="width: 18px; height: 18px; left: -2px;">
-                    <div id="langToggleStick"
-                        class="absolute w-4 h-1 bg-slate-400 transition-transform duration-300 origin-left"
-                        style="transform: rotate(-25deg); left: 50%;"></div>
-                    <div
-                        class="w-full h-full rounded-full bg-pink-500 z-10 relative shadow-[0_0_10px_rgba(236,72,153,0.8)] flex items-start justify-start p-1 cursor-pointer hover:bg-pink-400 transition-colors">
-                        <div class="w-1.5 h-1.5 bg-white/90 rounded-full"></div>
+        <!-- NAVBAR -->
+        <nav class="bg-white border-b border-gray-200 shadow-sm w-full">
+        <div class="px-3 sm:px-6 py-2 sm:py-3 flex flex-wrap justify-between items-center gap-y-2">
+            <!-- Logo & Dept -->
+            <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm">
+                    <span class="text-base sm:text-lg">🛡️</span>
+                </div>
+                <div>
+                    <h1 class="text-sm sm:text-lg font-bold text-gray-900 leading-tight flex items-center gap-1 sm:gap-2">
+                        Nagar Alert Hub <span class="text-gray-300 hidden sm:inline">|</span> <span class="text-blue-600 hidden sm:inline text-sm">ADMIN</span>
+                    </h1>
+                    <div class="inline-flex items-center bg-blue-50 text-blue-700 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold border border-blue-100 uppercase tracking-wider mt-0.5">
+                        <span th:text="${deptName}">DEPT</span> <span class="ml-1 hidden sm:inline">PANEL</span>
                     </div>
                 </div>
-            </button>
+            </div>
 
-            <span id="labelHi"
-                class="text-xs font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200"
-                onclick="setLanguage('hi')">हिं</span>
-        </div>
-        <a th:href="@{/admin/dashboard(dept=${deptName})}"
-            class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center shadow-lg border border-blue-500">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                </path>
-            </svg>
-            <span data-i18n="admin_analytics">View Analytics</span>
-        </a>
-        <a href="/" onclick="confirmExit(event)"
-            class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 shadow-lg">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                </path>
-            </svg>
-            <span data-i18n="admin_hub">Hub</span>
-        </a>
-        <a href="/logout"
-            class="bg-slate-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 hover:border-red-500">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                </path>
-            </svg>
-            <span data-i18n="admin_logout">Logout</span>
-        </a>
+            <!-- Actions -->
+            <div class="flex items-center space-x-1.5 sm:space-x-3 ml-auto shrink-0">
+                <!-- Language Toggle -->
+                <div class="flex items-center space-x-1 sm:space-x-2 bg-gray-50 sm:bg-gray-100 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-gray-200">
+                    <span id="labelEn" class="text-[9px] sm:text-[10px] font-bold tracking-widest cursor-pointer text-blue-600 transition" onclick="setLanguage('en')">EN</span>
+                    <button id="langToggleBtn" onclick="toggleLanguage()" class="relative flex items-center w-8 sm:w-11 h-[14px] sm:h-[18px] rounded-full border border-gray-300 focus:outline-none bg-white">
+                        <div id="langToggleKnob" class="absolute transition-transform duration-300 ease-in-out" style="width: 10px; height: 10px; sm:width: 14px; sm:height: 14px; left: 1px;">
+                            <div id="langToggleStick" class="absolute w-2.5 sm:w-3.5 h-0.5 bg-gray-400 transition-transform duration-300 origin-left rounded" style="transform: rotate(-25deg); left: 50%; top: 4px; sm:top: 6px;"></div>
+                            <div class="w-full h-full rounded-full bg-blue-600 z-10 relative shadow-sm cursor-pointer"></div>
+                        </div>
+                    </button>
+                    <span id="labelHi" class="text-[10px] sm:text-[11px] font-bold cursor-pointer text-gray-400 hover:text-gray-600 transition" onclick="setLanguage('hi')">हिं</span>
+                </div>
+
+                <a th:href="@{/admin/dashboard(dept=${deptName})}" class="flex items-center bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition shadow-sm">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span class="hidden sm:inline" data-i18n="admin_analytics">Analytics</span>
+                </a>
+                
+                <a href="/" onclick="confirmExit(event)" class="flex items-center bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition shadow-sm">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span class="hidden sm:inline" data-i18n="admin_hub">Hub</span>
+                </a>
+
+                <a href="/logout" class="flex items-center bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition shadow-sm">
+                    <span class="hidden sm:inline" data-i18n="admin_logout">Logout</span>
+                    <svg class="w-3.5 h-3.5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </a>
+            </div>
         </div>
     </nav>
+    </header>
 
-    <div class="container mx-auto mt-8 p-4">
-        <h2 class="text-2xl font-bold mb-4 text-slate-300" data-i18n="admin_incoming">Incoming Alerts</h2>
+    <div class="flex-1 bg-pattern">
+        <div class="container mx-auto px-4 sm:px-6 py-6 md:py-8 max-w-7xl">
+            
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center">
+                    <span class="w-1.5 h-6 bg-blue-600 rounded-full mr-2.5"></span>
+                    <span data-i18n="admin_incoming">Incoming Alerts</span>
+                </h2>
+                
+                <span class="text-xs font-bold text-gray-400 tracking-widest uppercase bg-white border border-gray-200 px-3 py-1 rounded-full shadow-sm" th:text="${#lists.size(alerts)} + ' active'">0 active</span>
+            </div>
 
-        <div class="overflow-x-auto bg-slate-800 rounded-lg shadow-xl">
-            <table class="w-full text-left text-sm text-slate-300">
-                <thead class="bg-slate-700 text-xs uppercase text-slate-400">
-                    <tr>
-                        <th class="px-6 py-3" data-i18n="th_location">Location</th>
-                        <th class="px-6 py-3" data-i18n="th_desc">Description</th>
-                        <th class="px-6 py-3" data-i18n="th_dept">Department</th>
-                        <th class="px-6 py-3" data-i18n="th_severity">Severity</th>
-                        <th class="px-6 py-3" data-i18n="th_time">Time</th>
-                        <th class="px-6 py-3" data-i18n="th_status">Status</th>
-                        <th class="px-6 py-3" data-i18n="th_action">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-700">
-                    <tr th:each="alert : ${alerts}" class="hover:bg-slate-700 transition">
-                        <td class="px-6 py-4 font-medium text-white" th:text="${alert.location}">Location</td>
-                        <td class="px-6 py-4">
-                            <span th:text="${alert.description}">Description</span>
+            <!-- ========================================== -->
+            <!-- 📱 MOBILE VIEW: Stacked Cards (< 768px)    -->
+            <!-- ========================================== -->
+            <div class="block md:hidden space-y-4 pb-10">
+                <div th:if="${alerts.empty}" class="card p-8 text-center mt-4">
+                    <div class="text-4xl mb-3 opacity-40">✅</div>
+                    <p class="text-gray-500 text-sm font-medium">No active alerts for <span th:text="${deptName}">DEPARTMENT</span>. Good job!</p>
+                </div>
+
+                <div th:each="alert : ${alerts}" class="card overflow-hidden">
+                    <!-- Card Header (Severity & Time) -->
+                    <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border"
+                              th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'bg-red-50 text-red-700 border-red-200' :
+                                              (${alert.severity?.name() == 'HIGH'} ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                                              (${alert.severity?.name() == 'MEDIUM'} ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-blue-50 text-blue-700 border-blue-200'))"
+                              th:text="${alert.severity}">SEVERITY</span>
+                        <span class="text-gray-400 text-[10px] font-medium" th:text="${#temporals.format(alert.timestamp, 'dd MMM, hh:mm a')}">Time</span>
+                    </div>
+                    
+                    <!-- Card Body -->
+                    <div class="p-4 space-y-3">
+                        <div>
+                            <p class="text-gray-900 text-sm font-medium line-clamp-2" th:text="${alert.description}">Description</p>
                             <div th:if="${alert.imageUrl != null}" class="mt-2">
                                 <a th:href="${alert.imageUrl}" target="_blank">
-                                    <img th:src="${alert.imageUrl}"
-                                        class="w-32 h-20 object-cover rounded-lg border border-slate-600 hover:opacity-80 transition cursor-pointer"
-                                        alt="Incident Photo">
+                                    <img th:src="${alert.imageUrl}" class="w-full h-32 object-cover rounded-lg border border-gray-200" alt="Incident Photo">
                                 </a>
                             </div>
-                            <div class="mt-2 flex items-center gap-1 text-slate-400 text-xs">
-                                <span>👍</span> <span th:text="${alert.upvotes}">0</span> upvotes
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="font-bold text-blue-300" th:text="${alert.department}">Dept</span>
-                            <div th:if="${alert.aiReason != null}"
-                                class="text-xs text-slate-400 italic mt-2 bg-slate-800 p-2 rounded border border-slate-700">
-                                💡 <span th:text="${alert.aiReason}">Reason</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 py-1 rounded text-xs font-bold" th:text="${alert.severity}"
-                                th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'bg-red-900 text-red-200' :
-                                              (${alert.severity?.name() == 'HIGH'} ? 'bg-orange-900 text-orange-200' :
-                                              (${alert.severity?.name() == 'MEDIUM'} ? 'bg-yellow-900 text-yellow-200' : 'bg-blue-900 text-blue-200'))">
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-slate-500"
-                            th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy, hh:mm a')}">Time</td>
-                        <td class="px-6 py-4">
-                            <span th:if="${alert.status?.name() == 'RESOLVED'}"
-                                class="text-green-400 font-bold flex items-center">
-                                <span class="mr-1">✓</span> Resolved
-                            </span>
-                            <span th:if="${alert.status?.name() == 'IN_PROGRESS'}"
-                                class="text-blue-400 font-bold flex items-center">
-                                <span class="mr-1">👷</span> In Progress
-                            </span>
-                            <span th:if="${alert.status?.name() == 'PENDING'}"
-                                class="text-yellow-500 italic flex items-center">
-                                <span class="mr-1">⏳</span> Pending
-                            </span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex gap-2">
-                                <!-- Verify Button (Pending -> In Progress) -->
-                                <form th:if="${alert.status?.name() == 'PENDING'}"
-                                    th:action="@{/admin/verify/{id}(id=${alert.alertId})}" method="post">
-                                    <input type="hidden" name="dept" th:value="${deptName}" />
-                                    <button type="submit"
-                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition flex items-center shadow-lg shadow-blue-900/50">
-                                        <span class="mr-1">👷</span> In Progress
-                                    </button>
-                                </form>
+                        </div>
+                        
+                        <div class="flex items-center text-xs text-gray-500 gap-2">
+                            <span class="opacity-70">📍</span>
+                            <span class="truncate" th:text="${alert.location}">Location</span>
+                        </div>
 
-                                <!-- Resolve Button (In Progress -> Resolved) -->
-                                <form th:if="${alert.status?.name() == 'IN_PROGRESS'}"
-                                    th:action="@{/admin/resolve/{id}(id=${alert.alertId})}" method="post"
-                                    onsubmit="return confirm('Are you sure this issue is resolved?');">
-                                    <input type="hidden" name="dept" th:value="${deptName}" />
-                                    <button type="submit"
-                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-bold transition flex items-center shadow-lg shadow-green-900/50">
-                                        <span class="mr-1">✅</span> Resolve
-                                    </button>
-                                </form>
+                        <div th:if="${alert.aiReason != null}" class="text-[11px] text-gray-600 bg-blue-50 p-2.5 rounded-lg border border-blue-100 flex items-start">
+                            <span class="mr-1.5 mt-0.5">💡</span> <span th:text="${alert.aiReason}">Reason</span>
+                        </div>
+                    </div>
 
-                                <span th:if="${alert.status?.name() == 'RESOLVED'}"
-                                    class="text-slate-500 text-xs italic">
-                                    Completed
-                                </span>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr th:if="${alerts.empty}">
-                        <td colspan="7" class="px-6 py-8 text-center text-slate-500">
-                            No active alerts for <span th:text="${deptName}">DEPARTMENT</span>. Good job!
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                    <!-- Card Footer (Status & Actions) -->
+                    <div class="px-4 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                        <!-- Status -->
+                        <div>
+                            <span th:if="${alert.status?.name() == 'RESOLVED'}" class="text-green-600 text-xs font-bold flex items-center"><span class="mr-1">✅</span> Resolved</span>
+                            <span th:if="${alert.status?.name() == 'IN_PROGRESS'}" class="text-blue-600 text-xs font-bold flex items-center"><span class="mr-1">👷</span> In Progress</span>
+                            <span th:if="${alert.status?.name() == 'PENDING'}" class="text-amber-600 text-xs font-bold flex items-center"><span class="mr-1">⏳</span> Pending</span>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div>
+                            <form th:if="${alert.status?.name() == 'PENDING'}" th:action="@{/admin/verify/{id}(id=${alert.alertId})}" method="post" class="m-0">
+                                <input type="hidden" name="dept" th:value="${deptName}" />
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm active:scale-95">Verify</button>
+                            </form>
+                            <form th:if="${alert.status?.name() == 'IN_PROGRESS'}" th:action="@{/admin/resolve/{id}(id=${alert.alertId})}" method="post" onsubmit="return confirm('Resolve this issue?');" class="m-0">
+                                <input type="hidden" name="dept" th:value="${deptName}" />
+                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm active:scale-95">Resolve</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- 💻 DESKTOP/TABLET VIEW: Data Table (>= 768px) -->
+            <!-- ========================================== -->
+            <div class="hidden md:block">
+                <div class="card overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm text-gray-700 whitespace-nowrap">
+                            <thead class="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200 font-semibold tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-4" data-i18n="th_location">Location</th>
+                                    <th class="px-6 py-4" data-i18n="th_desc">Description</th>
+                                    <th class="px-6 py-4" data-i18n="th_severity">Severity</th>
+                                    <th class="px-6 py-4" data-i18n="th_time">Time</th>
+                                    <th class="px-6 py-4" data-i18n="th_status">Status</th>
+                                    <th class="px-6 py-4 text-right" data-i18n="th_action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 bg-white">
+                                <tr th:each="alert : ${alerts}" class="hover:bg-gray-50/80 transition-colors">
+                                    
+                                    <!-- Location -->
+                                    <td class="px-6 py-4 whitespace-normal min-w-[200px] max-w-[250px]">
+                                        <div class="flex items-start">
+                                            <span class="text-gray-400 mr-1.5 mt-0.5 text-xs">📍</span>
+                                            <span class="font-medium text-gray-800 text-xs leading-relaxed" th:text="${alert.location}">Location</span>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Description & AI Reason -->
+                                    <td class="px-6 py-4 whitespace-normal min-w-[250px] max-w-[350px]">
+                                        <p class="text-gray-700 text-xs leading-relaxed line-clamp-2" th:text="${alert.description}">Description</p>
+                                        <div th:if="${alert.imageUrl != null}" class="mt-2">
+                                            <a th:href="${alert.imageUrl}" target="_blank" class="inline-block border border-gray-200 rounded p-0.5 hover:border-blue-300 transition">
+                                                <img th:src="${alert.imageUrl}" class="w-12 h-8 object-cover rounded-sm" alt="Photo">
+                                            </a>
+                                        </div>
+                                        <div th:if="${alert.aiReason != null}" class="mt-2 text-[10px] text-blue-800 bg-blue-50 p-2 rounded border border-blue-100">
+                                            💡 <span th:text="${alert.aiReason}">Reason</span>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Severity -->
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border"
+                                              th:classappend="${alert.severity?.name() == 'CRITICAL'} ? 'bg-red-50 text-red-700 border-red-200' :
+                                                            (${alert.severity?.name() == 'HIGH'} ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                                                            (${alert.severity?.name() == 'MEDIUM'} ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-blue-50 text-blue-700 border-blue-200'))"
+                                              th:text="${alert.severity}">
+                                        </span>
+                                    </td>
+                                    
+                                    <!-- Time -->
+                                    <td class="px-6 py-4 text-xs text-gray-500 font-medium">
+                                        <div th:text="${#temporals.format(alert.timestamp, 'dd MMM yyyy')}">Date</div>
+                                        <div class="text-gray-400" th:text="${#temporals.format(alert.timestamp, 'hh:mm a')}">Time</div>
+                                    </td>
+                                    
+                                    <!-- Status -->
+                                    <td class="px-6 py-4">
+                                        <span th:if="${alert.status?.name() == 'RESOLVED'}" class="inline-flex items-center text-green-600 text-xs font-bold bg-green-50 px-2 py-1 rounded border border-green-100">
+                                            <span class="mr-1">✅</span> Resolved
+                                        </span>
+                                        <span th:if="${alert.status?.name() == 'IN_PROGRESS'}" class="inline-flex items-center text-blue-600 text-xs font-bold bg-blue-50 px-2 py-1 rounded border border-blue-100">
+                                            <span class="mr-1">👷</span> In Progress
+                                        </span>
+                                        <span th:if="${alert.status?.name() == 'PENDING'}" class="inline-flex items-center text-amber-600 text-xs font-bold bg-amber-50 px-2 py-1 rounded border border-amber-100">
+                                            <span class="mr-1">⏳</span> Pending
+                                        </span>
+                                    </td>
+                                    
+                                    <!-- Action -->
+                                    <td class="px-6 py-4 text-right">
+                                        <form th:if="${alert.status?.name() == 'PENDING'}" th:action="@{/admin/verify/{id}(id=${alert.alertId})}" method="post" class="inline-block m-0">
+                                            <input type="hidden" name="dept" th:value="${deptName}" />
+                                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm active:scale-95">Verify</button>
+                                        </form>
+
+                                        <form th:if="${alert.status?.name() == 'IN_PROGRESS'}" th:action="@{/admin/resolve/{id}(id=${alert.alertId})}" method="post" onsubmit="return confirm('Are you sure this issue is resolved?');" class="inline-block m-0">
+                                            <input type="hidden" name="dept" th:value="${deptName}" />
+                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm active:scale-95">Resolve</button>
+                                        </form>
+
+                                        <span th:if="${alert.status?.name() == 'RESOLVED'}" class="text-gray-400 text-xs font-medium">
+                                            Completed
+                                        </span>
+                                    </td>
+                                </tr>
+                                
+                                <tr th:if="${alerts.empty}">
+                                    <td colspan="6" class="px-6 py-12 text-center">
+                                        <div class="text-4xl mb-2 opacity-30">✅</div>
+                                        <p class="text-gray-500 text-sm font-medium">No active alerts for <span th:text="${deptName}">DEPARTMENT</span>.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 
     <!-- Security Exit Modal -->
-    <div id="exitModal"
-        class="fixed inset-0 bg-black bg-opacity-80 hidden z-50 flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-slate-800 border border-slate-600 rounded-lg shadow-2xl p-6 max-w-sm w-full text-center">
-            <div class="text-4xl mb-4">🛡️</div>
-            <h3 class="text-xl font-bold text-white mb-2" data-i18n="modal_title">Secure Session Active</h3>
-            <p class="text-slate-400 text-sm mb-6" data-i18n="modal_desc">You are navigating away from the Admin Panel.
-                For security, your
-                session should be closed.</p>
+    <div id="exitModal" class="fixed inset-0 bg-gray-900/40 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center border border-gray-100 transform scale-100">
+            <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-100">
+                <span class="text-3xl">🛡️</span>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2" data-i18n="modal_title">Secure Session Active</h3>
+            <p class="text-gray-500 text-sm mb-6 leading-relaxed" data-i18n="modal_desc">You are navigating away from the Admin Panel. For security, your session should be closed.</p>
 
             <div class="flex space-x-3 justify-center">
-                <button onclick="closeExitModal()"
-                    class="px-4 py-2 rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white transition text-sm font-semibold">
+                <button onclick="closeExitModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition text-sm font-bold active:scale-95">
                     <span data-i18n="modal_cancel">Cancel</span>
                 </button>
-                <a href="/logout"
-                    class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-lg transition text-sm font-bold flex items-center">
-                    <span class="mr-2">🔒</span> <span data-i18n="modal_logout">Logout & Exit</span>
+                <a href="/logout" class="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition text-sm font-bold active:scale-95">
+                    <span data-i18n="modal_logout">Logout & Exit</span>
                 </a>
             </div>
         </div>
@@ -202,14 +301,10 @@
             event.preventDefault();
             document.getElementById('exitModal').classList.remove('hidden');
         }
-
         function closeExitModal() {
             document.getElementById('exitModal').classList.add('hidden');
         }
-    </script>
 
-    <!-- Language Translation Engine -->
-    <script>
         const translations = {
             hi: {
                 admin_analytics: 'एनालिटिक्स देखें',
@@ -218,7 +313,6 @@
                 admin_incoming: 'आने वाली शिकायतें',
                 th_location: 'स्थान',
                 th_desc: 'विवरण',
-                th_dept: 'विभाग',
                 th_severity: 'गंभीरता',
                 th_time: 'समय',
                 th_status: 'स्थिति',
@@ -226,16 +320,15 @@
                 modal_title: 'सुरक्षित सत्र सक्रिय',
                 modal_desc: 'आप एडमिन पैनल से बाहर जा रहे हैं। सुरक्षा के लिए, आपका सत्र बंद होना चाहिए।',
                 modal_cancel: 'रद्द करें',
-                modal_logout: 'लॉग आउट और बाहर जाएं'
+                modal_logout: 'लॉग आउट करें'
             },
             en: {
-                admin_analytics: 'View Analytics',
+                admin_analytics: 'Analytics',
                 admin_hub: 'Hub',
                 admin_logout: 'Logout',
                 admin_incoming: 'Incoming Alerts',
                 th_location: 'Location',
                 th_desc: 'Description',
-                th_dept: 'Department',
                 th_severity: 'Severity',
                 th_time: 'Time',
                 th_status: 'Status',
@@ -246,6 +339,7 @@
                 modal_logout: 'Logout & Exit'
             }
         };
+        
         let currentLang = localStorage.getItem('nagarLang') || 'hi';
         function applyTranslations(lang) {
             const t = translations[lang];
@@ -255,7 +349,6 @@
                 if (t[key]) el.textContent = t[key];
             });
 
-            // Arcade Lever UI Update
             const labelHi = document.getElementById('labelHi');
             const labelEn = document.getElementById('labelEn');
             const knob = document.getElementById('langToggleKnob');
@@ -263,14 +356,14 @@
 
             if (labelHi && labelEn && knob && stick) {
                 if (lang === 'en') {
-                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500";
-                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer text-blue-600 transition";
+                    labelHi.className = "text-[11px] font-bold cursor-pointer text-gray-400 hover:text-gray-600 transition";
                     knob.style.transform = "translateX(0)";
                     stick.style.transform = "rotate(-25deg)";
                 } else {
-                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-blue-500";
-                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
-                    knob.style.transform = "translateX(30px)";
+                    labelHi.className = "text-[11px] font-bold cursor-pointer text-blue-600 transition";
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer text-gray-400 hover:text-gray-600 transition";
+                    knob.style.transform = "translateX(24px)";
                     stick.style.transform = "rotate(-155deg)";
                 }
             }
@@ -287,6 +380,6 @@
         }
         document.addEventListener('DOMContentLoaded', () => applyTranslations(currentLang));
     </script>
+    <th:block th:replace="~{accessibility :: accessibility-widget}"></th:block>
 </body>
-
 </html>

@@ -3,41 +3,87 @@
 
 <head>
     <title>Complete Your Profile - Nagar Alert Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .bg-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        }
+    </style>
+    <th:block th:replace="~{accessibility :: accessibility-styles}"></th:block>
 </head>
 
-<body class="bg-slate-900 flex items-center justify-center min-h-screen text-slate-200 font-sans">
+<body class="bg-pattern flex flex-col text-gray-800 min-h-screen relative">
+    <header class="sticky top-0 w-full z-50">
+        <th:block th:replace="~{accessibility :: accessibility-top-bar}"></th:block>
+    </header>
+    <main class="flex-grow flex flex-col items-center justify-center p-4 w-full relative">
 
-    <div class="w-full max-w-md p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 relative text-center">
+    <!-- Logo header -->
+    <div class="mb-8 flex items-center space-x-2">
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm">
+            <span class="text-sm">📢</span>
+        </div>
+        <h1 class="text-xl font-bold text-gray-900 tracking-tight">Nagar Alert Hub</h1>
+    </div>
 
-        <h1 class="text-3xl font-bold text-white tracking-wider mb-2">Almost Done!</h1>
-        <p class="text-slate-400 mb-8">
-            Welcome, <span class="text-blue-400 font-semibold" th:text="${name}">User</span>! <br>
+    <div class="w-full max-w-md p-6 sm:p-8 md:p-10 card relative text-center">
+
+        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 border border-blue-100">
+            <span class="text-2xl sm:text-3xl">👋</span>
+        </div>
+
+        <h1 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight mb-2">Almost Done!</h1>
+        <p class="text-gray-500 mb-6 sm:mb-8 text-xs sm:text-sm leading-relaxed">
+            Welcome, <span class="text-blue-600 font-bold" th:text="${name}">User</span>! <br>
             Please provide your WhatsApp mobile number so you can track your reported alerts.
         </p>
 
-        <form th:action="@{/submit-phone}" method="post" class="space-y-6">
+        <form th:action="@{/submit-phone}" method="post" class="space-y-4 sm:space-y-6">
             <div class="text-left">
-                <label class="block text-xs font-bold text-slate-400 mb-2 uppercase">WhatsApp Mobile Number</label>
+                <label class="block text-[10px] sm:text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">WhatsApp Mobile Number</label>
                 <div class="flex">
-                    <span class="inline-flex items-center px-4 rounded-l bg-slate-700 border border-r-0 border-slate-600 text-slate-300 font-semibold">+91</span>
+                    <span class="inline-flex items-center px-3 sm:px-4 rounded-l-xl bg-gray-100 border border-r-0 border-gray-200 text-gray-600 font-semibold text-sm">+91</span>
                     <input type="tel" name="mobileNumber" required pattern="[0-9]{10}"
-                        class="w-full bg-slate-900 border border-slate-600 rounded-r p-3 text-white focus:border-blue-500 focus:outline-none placeholder-slate-600"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-r-xl p-3 sm:p-3.5 text-gray-900 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 focus:outline-none placeholder-gray-400 transition text-sm sm:text-base"
                         placeholder="e.g. 9876543210">
                 </div>
-                <p class="text-[10px] text-slate-500 mt-2">Required for receiving webhook updates via Twilio.</p>
+                <p class="text-[9px] sm:text-[10px] text-gray-400 mt-2 font-medium flex items-center">
+                    <span class="mr-1 mt-0.5">ℹ️</span> Required for receiving webhook updates via Twilio.
+                </p>
             </div>
 
             <button type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded transition mt-4">
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 sm:py-3.5 rounded-xl shadow-sm transition mt-2 active:scale-[0.98] text-sm sm:text-base">
                 Save & Continue
             </button>
         </form>
         
-        <div class="mt-6">
-            <a href="/logout" class="text-sm text-slate-500 hover:text-red-400 transition underline">Cancel & Logout</a>
+        <div class="mt-8">
+            <a href="/logout" class="text-xs text-gray-500 hover:text-red-500 transition font-medium border-b border-transparent hover:border-red-200 pb-0.5">Cancel & Logout</a>
         </div>
     </div>
-
+    </main>
+    
+    <th:block th:replace="~{accessibility :: accessibility-widget}"></th:block>
 </body>
 </html>

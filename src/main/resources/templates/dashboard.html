@@ -3,103 +3,127 @@
 
 <head>
     <title>Analytics Dashboard - Nagar Alert Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .bg-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    <th:block th:replace="~{accessibility :: accessibility-styles}"></th:block>
 </head>
 
-<body class="bg-slate-900 text-slate-200 font-sans min-h-screen">
+<body class="bg-pattern text-gray-800 font-sans min-h-screen flex flex-col relative">
 
-    <nav class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-lg border-b border-slate-700">
-        <div class="flex items-center space-x-4">
-            <h1 class="text-xl font-bold">Nagar Alert Hub <span class="text-blue-400">| ANALYTICS</span> <span
-                    class="text-xs ml-2 text-slate-500 uppercase" th:text="'[' + ${deptName} + ']'"></span></h1>
-        </div>
-        <div class="flex items-center space-x-4">
-            <!-- NORSK/ENGLISH Arcade Style Toggle -->
-            <div
-                class="flex items-center space-x-3 bg-black/30 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner mr-2">
-                <span id="labelEn"
-                    class="text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500"
-                    onclick="setLanguage('en')">EN</span>
+    <header class="sticky top-0 z-50 w-full flex flex-col">
+        <th:block th:replace="~{accessibility :: accessibility-top-bar}"></th:block>
 
-                <button id="langToggleBtn" onclick="toggleLanguage()"
-                    class="relative flex items-center w-12 h-5 rounded-full border-2 border-slate-600 focus:outline-none bg-black/50 mx-1">
-                    <div id="langToggleKnob"
-                        class="absolute flex items-center justify-center transition-transform duration-300 ease-in-out"
-                        style="width: 18px; height: 18px; left: -2px;">
-                        <div id="langToggleStick"
-                            class="absolute w-4 h-1 bg-slate-400 transition-transform duration-300 origin-left"
-                            style="transform: rotate(-25deg); left: 50%;"></div>
-                        <div
-                            class="w-full h-full rounded-full bg-pink-500 z-10 relative shadow-[0_0_10px_rgba(236,72,153,0.8)] flex items-start justify-start p-1 cursor-pointer hover:bg-pink-400 transition-colors">
-                            <div class="w-1.5 h-1.5 bg-white/90 rounded-full"></div>
-                        </div>
+        <!-- Navbar -->
+        <nav class="bg-white border-b border-gray-200 shadow-sm w-full">
+        <div class="px-3 sm:px-6 py-2 sm:py-3 flex flex-wrap justify-between items-center gap-y-2">
+            <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm">
+                    <span class="text-base sm:text-lg">📊</span>
+                </div>
+                <div>
+                    <h1 class="text-sm sm:text-lg font-bold text-gray-900 leading-tight flex items-center gap-1 sm:gap-2">
+                        Nagar Alert Hub <span class="text-gray-300 hidden sm:inline">|</span> <span class="text-blue-600 hidden sm:inline text-sm">ANALYTICS</span>
+                    </h1>
+                    <div class="inline-flex items-center bg-gray-100 text-gray-700 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold border border-gray-200 uppercase tracking-wider mt-0.5" th:text="${deptName}">
+                        DEPT
                     </div>
-                </button>
-
-                <span id="labelHi"
-                    class="text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200"
-                    onclick="setLanguage('hi')">हिं</span>
+                </div>
             </div>
-            <a th:href="@{/admin(dept=${deptName})}"
-                class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 shadow-lg">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                <span data-i18n="dash_back">Back to Control Panel</span>
-            </a>
-            <a href="/logout"
-                class="bg-slate-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center border border-slate-600 hover:border-red-500">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                    </path>
-                </svg>
-                <span data-i18n="dash_logout">Logout</span>
-            </a>
+            
+            <div class="flex items-center space-x-1.5 sm:space-x-3 ml-auto shrink-0">
+                <!-- Language Toggle -->
+                <div class="flex items-center space-x-1 sm:space-x-2 bg-gray-50 sm:bg-gray-100 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-gray-200">
+                    <span id="labelEn" class="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] cursor-pointer text-blue-600 transition" onclick="setLanguage('en')">EN</span>
+                    <button id="langToggleBtn" onclick="toggleLanguage()" class="relative flex items-center w-8 sm:w-11 h-[14px] sm:h-[18px] rounded-full border border-gray-300 focus:outline-none bg-white">
+                        <div id="langToggleKnob" class="absolute transition-transform duration-300 ease-in-out" style="width: 10px; height: 10px; sm:width: 14px; sm:height: 14px; left: 1px;">
+                            <div id="langToggleStick" class="absolute w-2.5 sm:w-3.5 h-0.5 bg-gray-400 transition-transform duration-300 origin-left rounded" style="transform: rotate(-25deg); left: 50%; top: 4px; sm:top: 6px;"></div>
+                            <div class="w-full h-full rounded-full bg-blue-600 z-10 relative shadow-sm cursor-pointer"></div>
+                        </div>
+                    </button>
+                    <span id="labelHi" class="text-[10px] sm:text-[11px] font-bold cursor-pointer text-gray-400 hover:text-gray-600 transition" onclick="setLanguage('hi')">हिं</span>
+                </div>
+
+                <a th:href="@{/admin(dept=${deptName})}" class="flex items-center bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition shadow-sm">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1.5 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    <span class="hidden sm:inline" data-i18n="dash_back">Back to Control Panel</span>
+                    <span class="sm:hidden" data-i18n="dash_back_short">Panel</span>
+                </a>
+                
+                <a href="/logout" class="flex items-center bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition shadow-sm">
+                    <span class="hidden sm:inline" data-i18n="dash_logout">Logout</span>
+                    <svg class="w-3.5 h-3.5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </a>
+            </div>
         </div>
     </nav>
+    </header>
 
-    <div class="container mx-auto mt-8 p-4">
+    <div class="container mx-auto mt-6 md:mt-8 px-4 md:px-6 max-w-6xl pb-12 flex-grow">
 
         <!-- Key Metrics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div
-                class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col items-center justify-center">
-                <p class="text-slate-400 text-sm uppercase tracking-wider font-bold mb-1" data-i18n="dash_today">Total
-                    Alerts Today</p>
-                <p class="text-5xl font-bold text-blue-400" th:text="${alertsToday}">0</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+            <div class="card p-6 flex flex-col items-center justify-center text-center">
+                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-3">📈</div>
+                <p class="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1" data-i18n="dash_today">Total Alerts Today</p>
+                <p class="text-4xl md:text-5xl font-extrabold text-blue-600" th:text="${alertsToday}">0</p>
             </div>
-            <div
-                class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col items-center justify-center">
-                <p class="text-slate-400 text-sm uppercase tracking-wider font-bold mb-1" data-i18n="dash_lifetime">
-                    Total Active Lifetime</p>
-                <p class="text-5xl font-bold text-white" th:text="${totalAlerts}">0</p>
+            
+            <div class="card p-6 flex flex-col items-center justify-center text-center">
+                <div class="w-10 h-10 bg-gray-50 text-gray-600 rounded-full flex items-center justify-center mb-3">📊</div>
+                <p class="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1" data-i18n="dash_lifetime">Total Active Lifetime</p>
+                <p class="text-4xl md:text-5xl font-extrabold text-gray-800" th:text="${totalAlerts}">0</p>
             </div>
-            <div
-                class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col items-center justify-center">
-                <p class="text-slate-400 text-sm uppercase tracking-wider font-bold mb-1" data-i18n="dash_resolution">
-                    Resolution Rate</p>
-                <p class="text-5xl font-bold text-green-400" th:text="${resolutionRate} + '%' ">0%</p>
+            
+            <div class="card p-6 flex flex-col items-center justify-center text-center sm:col-span-2 md:col-span-1">
+                <div class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-3">✅</div>
+                <p class="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1" data-i18n="dash_resolution">Resolution Rate</p>
+                <p class="text-4xl md:text-5xl font-extrabold text-green-500" th:text="${resolutionRate} + '%' ">0%</p>
             </div>
         </div>
 
         <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             <!-- Bar Chart -->
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                <h3 class="text-lg font-bold text-white mb-4" data-i18n="dash_by_dept">Alerts by Department</h3>
-                <div class="relative h-64">
+            <div class="card p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center" data-i18n="dash_by_dept">
+                    <span class="w-1.5 h-5 bg-blue-600 rounded-full mr-2"></span> Alerts by Department
+                </h3>
+                <div class="relative h-64 md:h-72 w-full">
                     <canvas id="deptChart"></canvas>
                 </div>
             </div>
 
             <!-- Donut Chart -->
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col items-center">
-                <h3 class="text-lg font-bold text-white mb-4 w-full text-left" data-i18n="dash_by_sev">Alerts by
-                    Severity</h3>
-                <div class="w-full max-w-[16rem] relative h-64 flex justify-center items-center">
+            <div class="card p-6 flex flex-col items-center">
+                <h3 class="text-lg font-bold text-gray-900 mb-6 w-full text-left flex items-center" data-i18n="dash_by_sev">
+                    <span class="w-1.5 h-5 bg-blue-600 rounded-full mr-2"></span> Alerts by Severity
+                </h3>
+                <div class="w-full max-w-[16rem] md:max-w-[18rem] relative h-64 md:h-72 flex justify-center items-center">
                     <canvas id="severityChart"></canvas>
                 </div>
             </div>
@@ -135,23 +159,23 @@
                     label: 'Alerts',
                     data: Object.keys(deptObj).length > 0 ? Object.values(deptObj) : [0],
                     backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',  // Police (blue)
-                        'rgba(239, 68, 68, 0.8)',   // Fire (red)
-                        'rgba(16, 185, 129, 0.8)',  // Medical (green)
-                        'rgba(245, 158, 11, 0.8)',  // Electrical (yellow)
-                        'rgba(249, 115, 22, 0.8)',  // Municipal (orange)
-                        'rgba(168, 85, 247, 0.8)'   // Traffic (purple)
+                        'rgba(37, 99, 235, 0.8)',   // blue-600
+                        'rgba(220, 38, 38, 0.8)',   // red-600
+                        'rgba(22, 163, 74, 0.8)',   // green-600
+                        'rgba(217, 119, 6, 0.8)',   // amber-600
+                        'rgba(234, 88, 12, 0.8)',   // orange-600
+                        'rgba(147, 51, 234, 0.8)'   // purple-600
                     ],
                     borderColor: [
-                        'rgb(59, 130, 246)',
-                        'rgb(239, 68, 68)',
-                        'rgb(16, 185, 129)',
-                        'rgb(245, 158, 11)',
-                        'rgb(249, 115, 22)',
-                        'rgb(168, 85, 247)'
+                        'rgb(29, 78, 216)',
+                        'rgb(185, 28, 28)',
+                        'rgb(21, 128, 61)',
+                        'rgb(180, 83, 9)',
+                        'rgb(194, 65, 12)',
+                        'rgb(126, 34, 206)'
                     ],
                     borderWidth: 1,
-                    borderRadius: 4
+                    borderRadius: 6
                 }]
             },
             options: {
@@ -159,8 +183,17 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', stepSize: 1 } },
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: '#f1f5f9' }, // slate-100
+                        ticks: { color: '#64748b', stepSize: 1, font: { family: 'Inter', size: 11 } },
+                        border: { display: false }
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#64748b', font: { family: 'Inter', size: 11, weight: '500' } },
+                        border: { display: false }
+                    }
                 }
             }
         });
@@ -172,23 +205,36 @@
             data: {
                 labels: Object.keys(sevObj).length > 0 ? Object.keys(sevObj) : ['No Data'],
                 datasets: [{
-                    data: Object.keys(sevObj).length > 0 ? Object.values(sevObj) : [1], // 1 for visual grey circle
+                    data: Object.keys(sevObj).length > 0 ? Object.values(sevObj) : [1], 
                     backgroundColor: Object.keys(sevObj).length > 0 ? [
-                        'rgba(220, 38, 38, 0.8)',   // CRITICAL
-                        'rgba(234, 88, 12, 0.8)',   // HIGH
-                        'rgba(202, 138, 4, 0.8)',   // MEDIUM
-                        'rgba(37, 99, 235, 0.8)'    // LOW
-                    ] : ['rgba(255, 255, 255, 0.1)'],
-                    borderColor: 'rgba(30, 41, 59, 1)', // match slate-800 bg
-                    borderWidth: 2
+                        'rgba(220, 38, 38, 0.85)',   // CRITICAL (red-600)
+                        'rgba(234, 88, 12, 0.85)',   // HIGH (orange-600)
+                        'rgba(217, 119, 6, 0.85)',   // MEDIUM (amber-600)
+                        'rgba(37, 99, 235, 0.85)'    // LOW (blue-600)
+                    ] : ['#f1f5f9'],
+                    borderColor: '#ffffff',
+                    borderWidth: 3
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '70%',
+                cutout: '72%',
                 plugins: {
-                    legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 20 } }
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { color: '#475569', padding: 20, font: { family: 'Inter', size: 12, weight: '500' }, usePointStyle: true, pointStyle: 'circle' } 
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e293b',
+                        bodyColor: '#475569',
+                        borderColor: '#e2e8f0',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        boxPadding: 6
+                    }
                 }
             }
         });
@@ -225,7 +271,6 @@
                 if (t[key]) el.textContent = t[key];
             });
 
-            // Arcade Lever UI Update
             const labelHi = document.getElementById('labelHi');
             const labelEn = document.getElementById('labelEn');
             const knob = document.getElementById('langToggleKnob');
@@ -233,14 +278,14 @@
 
             if (labelHi && labelEn && knob && stick) {
                 if (lang === 'en') {
-                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-blue-500";
-                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer text-blue-600 transition";
+                    labelHi.className = "text-[11px] font-bold cursor-pointer text-gray-400 hover:text-gray-600 transition";
                     knob.style.transform = "translateX(0)";
                     stick.style.transform = "rotate(-25deg)";
                 } else {
-                    labelHi.className = "text-sm font-bold tracking-wide cursor-pointer transition-colors duration-300 text-blue-500";
-                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer transition-colors duration-300 text-slate-400 hover:text-slate-200";
-                    knob.style.transform = "translateX(30px)";
+                    labelHi.className = "text-[11px] font-bold cursor-pointer text-blue-600 transition";
+                    labelEn.className = "text-[10px] font-bold tracking-[0.15em] cursor-pointer text-gray-400 hover:text-gray-600 transition";
+                    knob.style.transform = "translateX(24px)";
                     stick.style.transform = "rotate(-155deg)";
                 }
             }
@@ -257,6 +302,6 @@
         }
         document.addEventListener('DOMContentLoaded', () => applyTranslations(currentLang));
     </script>
+    <th:block th:replace="~{accessibility :: accessibility-widget}"></th:block>
 </body>
-
 </html>

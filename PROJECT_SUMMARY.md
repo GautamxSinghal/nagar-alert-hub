@@ -1,7 +1,7 @@
 # Nagar Alert Hub - Project Summary
 
 ## Overview
-**Nagar Alert Hub** is a Spring Boot web application designed to empower citizens to report public disruptions and emergencies (e.g., accidents, fires, potholes). The system streamlines civic reporting by automatically categorizing incidents, tracking their status, and allowing the community to stay informed.
+**Nagar Alert Hub** is a Spring Boot web application designed to empower citizens to report public disruptions and emergencies (e.g., accidents, fires, potholes). The system streamlines civic reporting by automatically categorizing incidents, tracking their status, and allowing the community to stay informed with real-time updates and secure logins.
 
 ## Key Features & Architecture
 
@@ -29,11 +29,18 @@
 - **Analytics Dashboard:** Admins can access a dedicated dashboard powered by **Chart.js**, featuring donut and bar charts for key metrics like Total Alerts, Resolution Rates, and Alerts by Severity/Department.
 - **Status Management:** Admins can securely view, search, verify, change status, and delete alerts. 
 
-### 6. Auto-Cleanup Thread
-- A `@Scheduled` background task runs every 2 minutes. It automatically sweeps the database and removes old alerts (older than 24 hours), **unless** they are marked as `RESOLVED`. This keeps the database clean while preserving community success stories.
+### 6. OAuth2 Authentication
+- **Social Login:** Citizens authenticate securely using Google or Facebook via Spring Security OAuth2.
+- **Profile Management:** User profiles and authentication details are automatically synced and stored in MongoDB.
 
-### 7. Technical Stack
-- **Backend:** Java 17, Spring Boot, Spring Security
-- **Database:** Embedded H2 Database mapped via Spring Data JPA (in-memory `jdbc:h2:mem:alertdb`)
+### 7. Real-time WhatsApp Notifications
+- **Twilio Integration:** Citizens receive instantaneous WhatsApp notifications when their alert is registered and whenever the admin updates the status (e.g., Pending -> In Progress -> Resolved), ensuring a closed trust loop.
+
+### 8. Auto-Cleanup Thread
+- A `@Scheduled` background task runs every hour. It automatically sweeps the database and removes `RESOLVED` alerts that are older than 24 hours. This keeps the database clean and relevant.
+
+### 9. Technical Stack
+- **Backend:** Java 17, Spring Boot, Spring Security, OAuth2 Client
+- **Database:** MongoDB mapped via Spring Data MongoDB
 - **Frontend:** Thymeleaf templates, TailwindCSS, Leaflet.js (maps), Chart.js (analytics)
-- **APIs Used:** Groq API (AI Classification), OpenStreetMap Nominatim (Geocoding)
+- **Integrations:** Twilio API (WhatsApp Notifications), Groq API (AI Classification), OpenStreetMap Nominatim (Geocoding)
